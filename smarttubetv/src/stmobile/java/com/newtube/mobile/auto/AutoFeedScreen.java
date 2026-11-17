@@ -36,7 +36,7 @@ import java.util.concurrent.Executors;
 
 /** NEWTUBE-AUTO: a list of videos (a feed or search results). A tap plays from there on. */
 public class AutoFeedScreen extends Screen {
-    public enum Kind { SUBSCRIPTIONS, HOME, HISTORY, SEARCH }
+    public enum Kind { SUBSCRIPTIONS, HOME, HISTORY, CONTINUE, PLAYLISTS, PLAYLIST, SEARCH }
 
     private static final ExecutorService IO = Executors.newFixedThreadPool(3);
     private static final int MAX_ITEMS = 40;
@@ -48,17 +48,31 @@ public class AutoFeedScreen extends Screen {
     @Nullable private final String mQuery;
     private final Handler mMain = new Handler(Looper.getMainLooper());
 
+    @Nullable private final MediaItem mPlaylist;
     private final List<Video> mVideos = new ArrayList<>();
+    /** PLAYLISTS only: the user's playlists (Watch later included), each one opens as a feed. */
+    private final List<MediaItem> mPlaylists = new ArrayList<>();
     private final Map<String, CarIcon> mThumbs = new HashMap<>();
     private boolean mLoading = true;
     @Nullable private String mError;
     private volatile boolean mAlive = true;
 
     public AutoFeedScreen(@NonNull CarContext carContext, AutoSession session, Kind kind, @Nullable String query) {
+        this(carContext, session, kind, query, null);
+    }
+
+    /** One playlist's videos; {@code title} is its name. */
+    public AutoFeedScreen(@NonNull CarContext carContext, AutoSession session, MediaItem playlist, String title) {
+        this(carContext, session, Kind.PLAYLIST, title, playlist);
+    }
+
+    private AutoFeedScreen(@NonNull CarContext carContext, AutoSession session, Kind kind,
+            @Nullable String query, @Nullable MediaItem playlist) {
         super(carContext);
         mSession = session;
         mKind = kind;
         mQuery = query;
+        mPlaylist = playlist;
         getLifecycle().addObserver(new DefaultLifecycleObserver() {
             @Override
             public void onDestroy(@NonNull LifecycleOwner owner) {
@@ -73,6 +87,9 @@ public class AutoFeedScreen extends Screen {
             case SUBSCRIPTIONS: return "Subscrições";
             case HOME: return "Início";
             case HISTORY: return "Histórico";
+            case CONTINUE: return "Continuar a ver";
+            case PLAYLISTS: return "Playlists";
+            case PLAYLIST: return mQuery != null ? mQuery : "Playlist";
             default: return mQuery != null ? mQuery : "Pesquisa";
         }
     }
@@ -80,13 +97,28 @@ public class AutoFeedScreen extends Screen {
     private void load() {
         IO.execute(() -> {
             List<Video> videos = new ArrayList<>();
+            List<MediaItem> playlists = new ArrayList<>();
             String error = null;
             try {
                 ContentService content = YouTubeServiceManager.instance().getContentService();
                 List<MediaGroup> groups = new ArrayList<>();
                 switch (mKind) {
                     case SUBSCRIPTIONS: add(groups, content.getSubscriptions()); break;
-                    case HISTORY: add(groups, content.getHistory()); break;
+                    case HISTORY:
+                    case CONTINUE: add(groups, content.getHistory()); break;
+                    case PLAYLIST: add(groups, content.getGroup(mPlaylist)); break;
+                    case PLAYLISTS: {
+                        MediaGroup group = content.getPlaylistsObserve().blockingFirst();
+                        if (group != null && group.getMediaItems() != null) {
+                            for (MediaItem item : group.getMediaItems()) {
+                                if (item != null && item.getTitle() != null
+                                        && (item.getVideoId() == null || item.getPlaylistId() != null)) {
+                                    playlists.add(item);
+                                }
+                            }
+                        }
+                        break;
+                    }
                     case HOME: {
                         List<MediaGroup> home = content.getHome();
                         if (home != null) groups.addAll(home);
@@ -106,11 +138,14 @@ public class AutoFeedScreen extends Screen {
                         if (!seen.add(item.getVideoId())) continue;
                         Video video = Video.from(item);
                         if (video.isShorts) continue;
+                        // Continue watching = started but not finished (YouTube's red bar).
+                        if (mKind == Kind.CONTINUE
+                                && (video.percentWatched < 1 || video.percentWatched > 95)) continue;
                         videos.add(video);
                     }
                 }
-                if (videos.isEmpty()) {
-                    error = mKind == Kind.SUBSCRIPTIONS || mKind == Kind.HISTORY
+                if (videos.isEmpty() && playlists.isEmpty()) {
+                    error = mKind != Kind.HOME && mKind != Kind.SEARCH
                             ? "Nada aqui. Tens sessão iniciada na app do telemóvel?"
                             : "Sem resultados";
                 }
@@ -122,6 +157,8 @@ public class AutoFeedScreen extends Screen {
                 if (!mAlive) return;
                 mVideos.clear();
                 mVideos.addAll(videos);
+                mPlaylists.clear();
+                mPlaylists.addAll(playlists);
                 mError = finalError;
                 mLoading = false;
                 invalidate();
@@ -173,6 +210,18 @@ public class AutoFeedScreen extends Screen {
         ItemList.Builder list = new ItemList.Builder();
         if (mError != null) {
             list.setNoItemsMessage(mError);
+        }
+        for (MediaItem playlist : mPlaylists) {
+            String name = playlist.getTitle();
+            Row.Builder row = new Row.Builder()
+                    .setTitle(name)
+                    .setImage(AutoHomeScreen.icon(getCarContext(), com.liskovsoft.smartyoutubetv2.tv.R.drawable.ic_auto_playlist))
+                    .setBrowsable(true)
+                    .setOnClickListener(() -> getScreenManager().push(
+                            new AutoFeedScreen(getCarContext(), mSession, playlist, name)));
+            CharSequence info = playlist.getSecondTitle();
+            if (info != null && info.length() > 0) row.addText(info);
+            list.addItem(row.build());
         }
         for (int i = 0; i < mVideos.size(); i++) {
             Video video = mVideos.get(i);

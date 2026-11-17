@@ -7,6 +7,8 @@ import androidx.car.app.Screen;
 import androidx.car.app.model.Action;
 import androidx.car.app.model.ActionStrip;
 import androidx.car.app.model.CarColor;
+import androidx.car.app.model.CarIcon;
+import androidx.core.graphics.drawable.IconCompat;
 import androidx.car.app.model.Template;
 import androidx.car.app.navigation.model.NavigationTemplate;
 import androidx.lifecycle.DefaultLifecycleObserver;
@@ -66,8 +68,15 @@ public class AutoPlayerScreen extends Screen implements AutoPlayer.Listener {
 
         ActionStrip.Builder transport = new ActionStrip.Builder()
                 .addAction(action(context, R.drawable.ic_auto_rewind, () -> player.seekBy(-10_000)))
-                .addAction(action(context, mLastPlaying ? R.drawable.ic_auto_pause : R.drawable.ic_auto_play,
-                        player::togglePlay))
+                .addAction(new Action.Builder()
+                        .setIcon(new CarIcon.Builder(IconCompat.createWithResource(context,
+                                mLastPlaying ? R.drawable.ic_auto_pause : R.drawable.ic_auto_play))
+                                .setTint(AutoHomeScreen.RED).build())
+                        .setOnClickListener(() -> {
+                            player.togglePlay();
+                            mSession.getRenderer().pokeOverlay();
+                        })
+                        .build())
                 .addAction(action(context, R.drawable.ic_auto_forward, () -> player.seekBy(10_000)));
         if (mLastHasNext) {
             transport.addAction(action(context, R.drawable.ic_auto_next, player::next));
@@ -108,10 +117,14 @@ public class AutoPlayerScreen extends Screen implements AutoPlayer.Listener {
         }
     }
 
-    private static Action action(CarContext context, int icon, Runnable onClick) {
+    private Action action(CarContext context, int icon, Runnable onClick) {
         return new Action.Builder()
-                .setIcon(AutoHomeScreen.icon(context, icon))
-                .setOnClickListener(onClick::run)
+                .setIcon(new CarIcon.Builder(IconCompat.createWithResource(context, icon)).build())
+                .setOnClickListener(() -> {
+                    onClick.run();
+                    // Each press brings back the title and progress bar over the video.
+                    if (mSession.getRenderer() != null) mSession.getRenderer().pokeOverlay();
+                })
                 .build();
     }
 }

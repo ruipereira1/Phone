@@ -93,6 +93,10 @@ public class AutoSession extends Session {
         }
     }
 
+    public AutoSurfaceRenderer getRenderer() {
+        return mRenderer;
+    }
+
     public DrivingState getDrivingState() {
         return mDriving;
     }

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.car.app.CarContext;
 import androidx.car.app.Screen;
 import androidx.car.app.model.Action;
+import androidx.car.app.model.CarColor;
 import androidx.car.app.model.CarIcon;
 import androidx.car.app.model.ItemList;
 import androidx.car.app.model.ListTemplate;
@@ -38,8 +39,11 @@ public class AutoHomeScreen extends Screen implements AutoPlayer.Listener {
         if (active != mWasActive) invalidate();
     }
 
+    /** NewTube's brand red (colors_mobile.xml mobile_color_primary), same in day and night. */
+    static final CarColor RED = CarColor.createCustom(0xFFFF0000, 0xFFFF0000);
+
     static CarIcon icon(CarContext context, int res) {
-        return new CarIcon.Builder(IconCompat.createWithResource(context, res)).build();
+        return new CarIcon.Builder(IconCompat.createWithResource(context, res)).setTint(RED).build();
     }
 
     @NonNull
@@ -61,6 +65,8 @@ public class AutoHomeScreen extends Screen implements AutoPlayer.Listener {
         }
         list.addItem(feedRow(context, "Subscrições", R.drawable.ic_auto_subs, AutoFeedScreen.Kind.SUBSCRIPTIONS));
         list.addItem(feedRow(context, "Início", R.drawable.ic_auto_home, AutoFeedScreen.Kind.HOME));
+        list.addItem(feedRow(context, "Continuar a ver", R.drawable.ic_auto_play, AutoFeedScreen.Kind.CONTINUE));
+        list.addItem(feedRow(context, "Playlists", R.drawable.ic_auto_playlist, AutoFeedScreen.Kind.PLAYLISTS));
         list.addItem(feedRow(context, "Histórico", R.drawable.ic_auto_history, AutoFeedScreen.Kind.HISTORY));
         list.addItem(new Row.Builder()
                 .setTitle("Pesquisar")
