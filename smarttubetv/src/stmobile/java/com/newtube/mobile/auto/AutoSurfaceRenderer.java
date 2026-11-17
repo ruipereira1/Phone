@@ -316,9 +316,14 @@ public final class AutoSurfaceRenderer implements SurfaceCallback, AutoPlayer.Li
 
     private void applyVisibleArea() {
         if (mRoot == null || mVisible.isEmpty() || mWidth <= 0) return;
-        // Keep everything inside the area the car does not cover with its own buttons.
-        mRoot.setPadding(mVisible.left, mVisible.top,
-                Math.max(0, mWidth - mVisible.right), Math.max(0, mHeight - mVisible.bottom));
+        // The picture uses the whole screen, with the car's buttons floating over it like any
+        // video player. Only the text (idle screen, title and progress bars) keeps clear of them.
+        int left = mVisible.left, top = mVisible.top;
+        int right = Math.max(0, mWidth - mVisible.right), bottom = Math.max(0, mHeight - mVisible.bottom);
+        int pad = Math.round(16 * mRoot.getResources().getDisplayMetrics().density);
+        mIdle.setPadding(left + pad, top + pad, right + pad, bottom + pad);
+        mTopBar.setPadding(left + pad, top + pad / 2, right + pad, pad * 2);
+        mBottomBar.setPadding(left + pad, pad * 2, right + pad, bottom + pad / 2);
     }
 
     // ------------------------------------------------------------------ state
