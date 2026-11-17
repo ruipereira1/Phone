@@ -43,7 +43,10 @@ public final class DrivingState {
     private static final float PARKED_MPS = 0.6f;   // ~2 km/h
     private static final float MOVING_MPS = 1.5f;   // ~5 km/h
     private static final long PARKED_HOLD_MS = 2_000;
-    private static final long SOURCE_STALE_MS = 10_000;
+    // The car reports speed on change: parked, it may say "0" once and then nothing. So the car's
+    // last value holds for as long as its listener is registered. GPS fixes come every second
+    // when they come at all, so a silent GPS is treated as no source after a while.
+    private static final long GPS_STALE_MS = 30_000;
 
     private final CarContext mCarContext;
     private final Listener mListener;
@@ -95,6 +98,8 @@ public final class DrivingState {
     public void start() {
         stop();
         mStarted = true;
+        mCarSpeed = -1;
+        mGpsSpeed = -1;
         startCarSpeed();
         startGps();
         mHandler.postDelayed(mTick, 1_000);
@@ -134,8 +139,10 @@ public final class DrivingState {
                 }
             };
             carInfo().addSpeedListener(mMainExecutor, mSpeedListener);
+            android.util.Log.i("NewTubeAuto", "car speed listener on");
         } catch (Throwable error) {
             // Older Android Auto hosts or cars without the speed property: GPS covers it.
+            android.util.Log.w("NewTubeAuto", "car speed unavailable: " + error);
             mSpeedListener = null;
         }
     }
@@ -183,8 +190,8 @@ public final class DrivingState {
 
     private void evaluate() {
         long now = SystemClock.elapsedRealtime();
-        boolean carLive = mCarSpeed >= 0 && now - mCarSpeedAt < SOURCE_STALE_MS;
-        boolean gpsLive = mGpsSpeed >= 0 && now - mGpsSpeedAt < SOURCE_STALE_MS;
+        boolean carLive = mCarSpeed >= 0 && mSpeedListener != null;
+        boolean gpsLive = mGpsSpeed >= 0 && now - mGpsSpeedAt < GPS_STALE_MS;
 
         State next;
         if (!carLive && !gpsLive) {
@@ -203,6 +210,8 @@ public final class DrivingState {
             mSlowSince = -1;
         }
         if (next != mState) {
+            android.util.Log.i("NewTubeAuto", "driving " + mState + " -> " + next
+                    + " car=" + (carLive ? mCarSpeed : "-") + " gps=" + (gpsLive ? mGpsSpeed : "-"));
             mState = next;
             mListener.onDrivingStateChanged(next);
         }
