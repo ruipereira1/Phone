@@ -5,7 +5,8 @@
     <string name="connect_ui_launcher_label">Fossify Connect</string>
     <string name="connect_ui_home_title">Família</string>
     <string name="connect_ui_home_clock_description">Hora e data. Quem ajuda: manter premido 3 segundos para abrir a configuração.</string>
-    <string name="connect_ui_home_empty">Ainda não há familiares.\n\nPeça a quem o ajuda para marcar os contactos da família com uma estrela (favoritos).</string>
+    <string name="connect_ui_home_empty">Ainda não há familiares neste ecrã.</string>
+    <string name="connect_ui_home_setup">Configurar família</string>
     <string name="connect_ui_home_not_default">Toque aqui para este tablet poder fazer e receber chamadas</string>
     <string name="connect_ui_tile_description">%1$s</string>
 
@@ -31,7 +32,15 @@
     <string name="connect_ui_caregiver_title">Configuração</string>
     <string name="connect_ui_caregiver_hint">Só para quem ajuda. Abre-se com um toque longo de 3 segundos no relógio.</string>
     <string name="connect_ui_caregiver_family">Família</string>
-    <string name="connect_ui_caregiver_edit_favorites">＋  Adicionar familiar (marcar favoritos nos contactos)</string>
+    <string name="connect_ui_caregiver_add">＋  Adicionar familiar</string>
+    <string name="connect_ui_caregiver_open_contacts">Abrir a app de contactos</string>
+    <string name="connect_ui_caregiver_remove">Remover %1$s da família</string>
+    <string name="connect_ui_caregiver_remove_confirm">Remover %1$s do ecrã da família? O contacto continua na agenda.</string>
+    <string name="connect_ui_caregiver_remove_yes">Remover</string>
+    <string name="connect_ui_caregiver_cancel">Cancelar</string>
+    <string name="connect_ui_caregiver_contacts_permission">Permitir acesso aos contactos</string>
+    <string name="connect_ui_caregiver_empty">Ainda não há familiares. Toque em “Adicionar familiar” e escolha os contactos da família.</string>
+    <string name="connect_ui_caregiver_added">%1$s foi adicionado à família.</string>
     <string name="connect_ui_caregiver_no_providers">Nenhum módulo de videochamada instalado.</string>
     <string name="connect_ui_caregiver_provider_on">✓ %1$s configurado (alterar)</string>
     <string name="connect_ui_caregiver_provider_off">Configurar %1$s</string>

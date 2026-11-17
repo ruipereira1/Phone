@@ -2,8 +2,11 @@ package pt.familia.connect.ui
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ComponentName
+import android.content.ContentValues
 import android.content.Intent
+import android.net.Uri
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -14,14 +17,16 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 import pt.familia.connect.core.ConnectServices
 import pt.familia.connect.core.ConnectSettings
 import pt.familia.connect.core.FamilyContacts
 
 /**
- * Configuração para o cuidador (familiar ou técnico), aberta com um toque longo de 3 s na
- * engrenagem do ecrã principal. Permite:
- * - escolher a família (os favoritos da agenda, com a app de contactos);
+ * Configuração para o cuidador (familiar ou técnico). Abre-se com um toque longo de 3 s no relógio
+ * do ecrã principal ou, na primeira utilização, com o botão "Configurar família". Permite:
+ * - escolher a família diretamente na app: o seletor de contactos marca o escolhido como favorito
+ *   (a família são os favoritos da agenda, os mesmos da Fossify Phone);
  * - configurar a videochamada de cada familiar, um botão por fornecedor instalado;
  * - ligar ou desligar o modo simplificado e o uso como ecrã principal do tablet;
  * - abrir a Fossify Phone completa, sem perder nenhuma funcionalidade original.
@@ -29,6 +34,7 @@ import pt.familia.connect.core.FamilyContacts
 class CaregiverActivity : Activity() {
 
     private lateinit var list: LinearLayout
+    private var pendingStar: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,12 +57,13 @@ class CaregiverActivity : Activity() {
 
         text(getString(R.string.connect_ui_caregiver_hint))
         section(R.string.connect_ui_caregiver_family)
-        button(R.string.connect_ui_caregiver_edit_favorites) {
-            startActivity(Intent(Intent.ACTION_VIEW, ContactsContract.Contacts.CONTENT_URI))
+        if (!FamilyContacts.canRead(this)) {
+            button(R.string.connect_ui_caregiver_contacts_permission) { requestContacts() }
         }
+        button(R.string.connect_ui_caregiver_add) { pickContact() }
         val providers = ConnectServices.videoProviders()
         val family = FamilyContacts.favorites(this)
-        if (family.isEmpty()) text(getString(R.string.connect_ui_home_empty))
+        if (family.isEmpty()) text(getString(R.string.connect_ui_caregiver_empty))
         family.forEach { contact ->
             text(contact.name, sizeSp = 22f, bold = true)
             if (providers.isEmpty()) text(getString(R.string.connect_ui_caregiver_no_providers))
@@ -69,6 +76,10 @@ class CaregiverActivity : Activity() {
                 provider.setupIntent(this, contact)?.let { setup -> button(label) { startActivity(setup) } }
                     ?: text(label)
             }
+            button(getString(R.string.connect_ui_caregiver_remove, contact.name)) { confirmRemove(contact.lookupKey, contact.name) }
+        }
+        button(R.string.connect_ui_caregiver_open_contacts) {
+            startActivity(Intent(Intent.ACTION_VIEW, ContactsContract.Contacts.CONTENT_URI))
         }
 
         section(R.string.connect_ui_caregiver_mode)
@@ -93,6 +104,63 @@ class CaregiverActivity : Activity() {
 
         section(R.string.connect_ui_caregiver_original)
         button(R.string.connect_ui_open_full_phone) { startActivity(HomeActivity.fullPhoneIntent(this)) }
+    }
+
+    // ── Família: escolher e remover (marca/desmarca o favorito na agenda) ──────────────────────
+    private fun pickContact() {
+        if (!FamilyContacts.canRead(this)) return requestContacts()
+        startActivityForResult(Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI), REQ_PICK)
+    }
+
+    @Deprecated("Activity.onActivityResult")
+    @Suppress("DEPRECATION")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val uri = data?.data
+        if (requestCode == REQ_PICK && resultCode == RESULT_OK && uri != null) setStarred(uri, true)
+    }
+
+    private fun confirmRemove(lookupKey: String, name: String) {
+        AlertDialog.Builder(this)
+            .setMessage(getString(R.string.connect_ui_caregiver_remove_confirm, name))
+            .setPositiveButton(R.string.connect_ui_caregiver_remove_yes) { _, _ ->
+                setStarred(ContactsContract.Contacts.CONTENT_LOOKUP_URI.buildUpon().appendPath(lookupKey).build(), false)
+            }
+            .setNegativeButton(R.string.connect_ui_caregiver_cancel, null)
+            .show()
+    }
+
+    private fun setStarred(contactUri: Uri, starred: Boolean) {
+        if (checkSelfPermission(Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            pendingStar = if (starred) contactUri else null
+            requestPermissions(arrayOf(Manifest.permission.WRITE_CONTACTS), REQ_WRITE_CONTACTS)
+            return
+        }
+        val values = ContentValues().apply { put(ContactsContract.Contacts.STARRED, if (starred) 1 else 0) }
+        val changed = try {
+            contentResolver.update(contactUri, values, null, null) > 0
+        } catch (e: RuntimeException) {
+            false
+        }
+        if (changed && starred) {
+            val name = contentResolver.query(contactUri, arrayOf(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY), null, null, null)
+                ?.use { if (it.moveToFirst()) it.getString(0) else null }
+            if (name != null) Toast.makeText(this, getString(R.string.connect_ui_caregiver_added, name), Toast.LENGTH_SHORT).show()
+        }
+        render()
+    }
+
+    private fun requestContacts() {
+        requestPermissions(arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS), REQ_CONTACTS)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        val granted = grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+        when (requestCode) {
+            REQ_WRITE_CONTACTS -> pendingStar.also { pendingStar = null }?.let { if (granted) setStarred(it, true) }
+            REQ_CONTACTS -> render()
+        }
     }
 
     // ── Ecrã principal (launcher) do tablet dedicado ───────────────────────────────────────────
@@ -143,4 +211,10 @@ class CaregiverActivity : Activity() {
     }
 
     private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
+
+    private companion object {
+        const val REQ_PICK = 91
+        const val REQ_WRITE_CONTACTS = 92
+        const val REQ_CONTACTS = 93
+    }
 }

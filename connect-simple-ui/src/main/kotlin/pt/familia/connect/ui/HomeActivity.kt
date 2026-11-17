@@ -39,7 +39,7 @@ import java.util.concurrent.Executors
 class HomeActivity : Activity() {
 
     private lateinit var grid: GridView
-    private lateinit var empty: TextView
+    private lateinit var empty: View
     private lateinit var banner: Button
     private lateinit var missedBox: View
     private val adapter = FamilyAdapter()
@@ -55,6 +55,9 @@ class HomeActivity : Activity() {
         missedBox = findViewById(R.id.connect_ui_home_missed)
         grid.adapter = adapter
         setupCaregiverGesture(findViewById(R.id.connect_ui_home_clock))
+        findViewById<Button>(R.id.connect_ui_home_setup).setOnClickListener {
+            startActivity(Intent(this, CaregiverActivity::class.java))
+        }
     }
 
     override fun onResume() {
