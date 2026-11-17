@@ -59,8 +59,24 @@ Os módulos personalizados nunca são substituídos automaticamente.
 :connect-simple-ui      Interface para idosos: ecrã de fotografias, ações, chamada recebida, configuração
 ```
 
-Se um módulo for retirado da compilação, os outros continuam a compilar. A ligação entre
-módulos é feita na `:app`, em `ConnectRegistry`.
+Se um módulo for retirado da compilação, os outros continuam a compilar. Os módulos não se
+conhecem: cada um declara no seu manifesto um `ModuleInitializer`, que o regista em
+`ConnectServices` (`connect-core`) quando o processo arranca. A `:app` limita-se a declarar os
+módulos como dependências.
+
+## CI
+
+`.github/workflows/connect-build.yml` corre os testes, gera o APK `foss` debug, confirma que
+cada módulo compila sozinho e verifica o `applicationId`. Os outros workflows da pasta vêm do
+upstream e chamam workflows privados da Fossify. Não se apagam (para não criar conflitos no
+sync); desligam-se uma vez no GitHub do fork:
+
+```bash
+for w in image-minimizer no-response pr-labeler pr prepare-release-pr release testing-build \
+         update-commons update-lint-baselines validate-fastlane-metadata; do
+  gh workflow disable "$w.yml"
+done
+```
 
 ## Estado do FaceTime
 

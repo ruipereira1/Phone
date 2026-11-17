@@ -1,0 +1,49 @@
+# Fossify Connect: compilação e testes do fork.
+# Os outros workflows desta pasta vêm do upstream e chamam workflows privados da Fossify. No
+# GitHub do fork, desligam-se uma vez (ver FORK.md, secção "CI").
+name: Connect · build
+
+on:
+  push:
+    branches: [connect/main, "sync/**"]
+  pull_request:
+    branches: [connect/main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Testes unitários dos módulos Connect
+        run: ./gradlew --no-daemon :connect-facetime:testDebugUnitTest
+
+      - name: APK de testes (foss, debug)
+        run: ./gradlew --no-daemon :app:assembleFossDebug
+
+      - name: Independência dos módulos (cada um compila sozinho)
+        run: ./gradlew --no-daemon :connect-core:assembleDebug :connect-facetime:assembleDebug :connect-simple-ui:assembleDebug :connect-matrix:assembleDebug
+
+      - name: Verificar applicationId
+        run: |
+          APK=$(ls app/build/outputs/apk/foss/debug/*.apk | head -1)
+          AAPT=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -1)
+          "$AAPT" dump packagename "$APK" | tee /dev/stderr | grep -qx "pt.familia.connect.debug"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fossify-connect-foss-debug
+          path: app/build/outputs/apk/foss/debug/*.apk
+          if-no-files-found: error
