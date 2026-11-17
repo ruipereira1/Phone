@@ -3,9 +3,15 @@
 Classificação obrigatória: **FUNCIONA** (testado com dois equipamentos reais) · **PARCIAL**
 (funciona, com limitações documentadas) · **NÃO SUPORTADO** · **POR VALIDAR**.
 
-Estado atual: **nenhum teste em equipamento real foi feito.** O código foi escrito sem
-compilação local: o ambiente de desenvolvimento não chegava ao Gradle, ao Maven nem ao SDK
-Android. A primeira compilação é a do CI (`connect-build.yml`).
+Estado atual: **nenhum teste em equipamento real foi feito.**
+
+Verificação feita no ambiente de desenvolvimento, que não chegava ao Gradle, ao Maven nem ao SDK:
+- os quatro módulos `connect-*` e a `SplashActivity` alterada compilam com o Kotlin 2.0.21
+  contra o `android.jar` da API 36, sem erros nem avisos (R gerado a partir dos recursos);
+- os testes de `FaceTimeLink` (20 verificações) passam na JVM.
+
+Ainda não foram verificados: o merge dos manifestos, o AAPT2/recursos, o lint, o AGP 9.4 com o
+Kotlin 2.4 do projeto e o APK final. É a primeira coisa que o CI (`connect-build.yml`) faz.
 
 ## Equipamento
 

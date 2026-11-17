@@ -47,11 +47,13 @@ value class FaceTimeLink private constructor(val url: String) {
 
         /** Confirma que um endereço carregado na WebView pertence à Apple (navegação permitida). */
         fun isAppleOrigin(url: String?): Boolean {
-            val host = try {
-                URI(url ?: return false).host ?: return false
+            if (url == null) return false
+            val rawHost: String? = try {
+                URI(url).host
             } catch (e: URISyntaxException) {
-                return false
-            }.lowercase()
+                null
+            }
+            val host = rawHost?.lowercase() ?: return false
             return host == "apple.com" || host.endsWith(".apple.com") ||
                 host == "icloud.com" || host.endsWith(".icloud.com")
         }

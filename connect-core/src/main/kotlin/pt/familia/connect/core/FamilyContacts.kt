@@ -59,18 +59,21 @@ object FamilyContacts {
     fun canRead(context: Context) =
         context.checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
 
-    private fun readSingle(context: Context, uri: Uri): FamilyContact? =
-        context.contentResolver.query(uri, CONTACT_PROJECTION, null, null, null)?.use { c ->
+    private fun readSingle(context: Context, uri: Uri): FamilyContact? {
+        val cursor = context.contentResolver.query(uri, CONTACT_PROJECTION, null, null, null) ?: return null
+        cursor.use { c ->
             if (!c.moveToFirst()) return null
             val id = c.getLong(0)
-            FamilyContact(
+            val lookupKey = c.getString(1) ?: return null
+            return FamilyContact(
                 contactId = id,
-                lookupKey = c.getString(1) ?: return null,
+                lookupKey = lookupKey,
                 name = c.getString(2) ?: "",
                 photoUri = c.getString(3)?.let(Uri::parse),
                 phoneNumber = if (c.getInt(4) > 0) primaryNumber(context, id) else null,
             )
         }
+    }
 
     /** Prefere o número marcado como predefinido e, a seguir, o telemóvel. */
     private fun primaryNumber(context: Context, contactId: Long): String? =
