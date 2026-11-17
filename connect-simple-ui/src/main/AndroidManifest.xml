@@ -55,6 +55,6 @@
         <activity
             android:name="pt.familia.connect.ui.CaregiverActivity"
             android:exported="false"
-            android:theme="@style/ConnectUi.Caregiver" />
+            android:theme="@style/ConnectConfig" />
     </application>
 </manifest>

@@ -12,20 +12,27 @@
 
     <string name="connect_facetime_setup_label">Configurar FaceTime</string>
     <string name="connect_facetime_setup_title">FaceTime de %1$s</string>
-    <string name="connect_facetime_setup_steps">1. No iPhone do familiar, abra o FaceTime e toque em “Criar link”.\n2. Partilhe o link para este tablet (SMS ou email) e copie-o.\n3. Toque em “Colar” e depois em “Guardar”.\n\nO link fica guardado cifrado neste tablet. Quem tiver o link pode pedir para entrar na chamada: não o partilhe com mais ninguém.</string>
     <string name="connect_facetime_setup_link_hint">https://facetime.apple.com/join#…</string>
-    <string name="connect_facetime_setup_paste">Colar</string>
+    <string name="connect_facetime_setup_paste">Colar link</string>
     <string name="connect_facetime_setup_save">Guardar</string>
-    <string name="connect_facetime_setup_test">Testar chamada</string>
-    <string name="connect_facetime_setup_remove">Remover link</string>
-    <string name="connect_facetime_setup_notify">Avisar o familiar por SMS quando o idoso ligar</string>
+    <string name="connect_facetime_setup_test">Testar videochamada</string>
+    <string name="connect_facetime_setup_remove">Remover o link FaceTime</string>
+    <string name="connect_facetime_setup_notify">Avisar por SMS quando o idoso ligar</string>
     <string name="connect_facetime_setup_owner_label">Nome com que o tablet entra na chamada</string>
     <string name="connect_facetime_setup_owner_hint">por exemplo, Avó Maria</string>
-    <string name="connect_facetime_setup_autofill">Preencher este nome automaticamente na página da Apple (experimental)</string>
+    <string name="connect_facetime_setup_autofill">Preencher o nome na página da Apple (experimental)</string>
     <string name="connect_facetime_setup_incoming">Receber convites FaceTime por SMS (apenas de favoritos)</string>
     <string name="connect_facetime_setup_status_title">Estado real desta integração</string>
     <string name="connect_facetime_setup_invalid">Isto não é um link FaceTime válido (https://facetime.apple.com/join#…).</string>
     <string name="connect_facetime_setup_saved">Link guardado.</string>
+    <string name="connect_facetime_setup_intro">A videochamada usa o link FaceTime do familiar. Faz-se uma vez; depois, o idoso só toca em “Vídeo”.</string>
+    <string name="connect_facetime_setup_step1">1. No iPhone de %1$s</string>
+    <string name="connect_facetime_setup_steps">• Abrir a app FaceTime\n• Tocar em “Criar link”\n• Enviar o link para este aparelho (SMS, WhatsApp ou email) e copiá-lo</string>
+    <string name="connect_facetime_setup_step2">2. Colar o link aqui</string>
+    <string name="connect_facetime_setup_state_ok">✓  Link guardado</string>
+    <string name="connect_facetime_setup_state_missing">Ainda sem link</string>
+    <string name="connect_facetime_setup_options">Opções</string>
+    <string name="connect_facetime_setup_need_link">Cole primeiro o link FaceTime.</string>
     <string name="connect_facetime_setup_removed">Link removido.</string>
     <string name="connect_facetime_setup_sms_denied">Sem a permissão de SMS esta opção não funciona.</string>
 </resources>

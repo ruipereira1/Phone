@@ -3,48 +3,56 @@ package pt.familia.connect.ui
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.role.RoleManager
 import android.content.ComponentName
 import android.content.ContentValues
 import android.content.Intent
-import android.net.Uri
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.Settings
-import android.widget.Button
-import android.widget.CheckBox
+import android.telecom.TelecomManager
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ScrollView
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import pt.familia.connect.core.ConnectServices
 import pt.familia.connect.core.ConnectSettings
+import pt.familia.connect.core.FamilyContact
 import pt.familia.connect.core.FamilyContacts
 
 /**
- * Configuração para o cuidador (familiar ou técnico). Abre-se com um toque longo de 3 s no relógio
- * do ecrã principal ou, na primeira utilização, com o botão "Configurar família". Permite:
- * - escolher a família diretamente na app: o seletor de contactos marca o escolhido como favorito
- *   (a família são os favoritos da agenda, os mesmos da Fossify Phone);
- * - configurar a videochamada de cada familiar, um botão por fornecedor instalado;
- * - ligar ou desligar o modo simplificado e o uso como ecrã principal do tablet;
- * - abrir a Fossify Phone completa, sem perder nenhuma funcionalidade original.
+ * Configuração para o cuidador (Figma: "M5 · Configuração"). Abre-se com um toque longo de 3 s
+ * no relógio do ecrã inicial ou, na primeira utilização, com o botão "Configurar família".
+ *
+ * - Avisos no topo, só quando é preciso fazer alguma coisa (contactos, telefone predefinido,
+ *   notificações, ecrã inteiro). Cada aviso resolve-se com um toque.
+ * - Família: uma linha por familiar, com o estado do vídeo. Tocar na linha abre a configuração do
+ *   vídeo; o ✕ tira-o da família (só desmarca o favorito, o contacto fica na agenda).
+ *   "＋ Adicionar familiar" abre o seletor de contactos e marca o escolhido como favorito.
+ * - Utilização: abrir sempre no ecrã simplificado; usar como ecrã principal do aparelho.
+ * - Telefone completo: a Fossify Phone original, com todas as funções.
  */
 class CaregiverActivity : Activity() {
 
-    private lateinit var list: LinearLayout
+    private lateinit var alerts: LinearLayout
+    private lateinit var familyList: LinearLayout
     private var pendingStar: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = getString(R.string.connect_ui_caregiver_title)
-        list = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            val pad = dp(24)
-            setPadding(pad, pad, pad, pad)
+        setContentView(R.layout.connect_ui_config)
+        alerts = findViewById(R.id.connect_ui_config_alerts)
+        familyList = findViewById(R.id.connect_ui_config_family)
+        findViewById<View>(R.id.connect_ui_config_add).setOnClickListener { pickContact() }
+        findViewById<View>(R.id.connect_ui_config_full_phone).setOnClickListener {
+            startActivity(HomeActivity.fullPhoneIntent(this))
         }
-        setContentView(ScrollView(this).apply { addView(list) })
     }
 
     override fun onResume() {
@@ -53,60 +61,101 @@ class CaregiverActivity : Activity() {
     }
 
     private fun render() {
-        list.removeAllViews()
+        renderAlerts()
+        renderFamily()
+        findViewById<Switch>(R.id.connect_ui_config_simple).apply {
+            setOnCheckedChangeListener(null)
+            isChecked = ConnectSettings.isSimpleModeEnabled(this@CaregiverActivity)
+            setOnCheckedChangeListener { _, checked -> ConnectSettings.setSimpleModeEnabled(this@CaregiverActivity, checked) }
+        }
+        findViewById<Switch>(R.id.connect_ui_config_launcher).apply {
+            setOnCheckedChangeListener(null)
+            isChecked = isHomeLauncherEnabled()
+            setOnCheckedChangeListener { _, checked -> setHomeLauncherEnabled(checked) }
+        }
+    }
 
-        text(getString(R.string.connect_ui_caregiver_hint))
-        section(R.string.connect_ui_caregiver_family)
-        if (!FamilyContacts.canRead(this)) {
-            button(R.string.connect_ui_caregiver_contacts_permission) { requestContacts() }
-        }
-        button(R.string.connect_ui_caregiver_add) { pickContact() }
-        val providers = ConnectServices.videoProviders()
-        val family = FamilyContacts.favorites(this)
-        if (family.isEmpty()) text(getString(R.string.connect_ui_caregiver_empty))
-        family.forEach { contact ->
-            text(contact.name, sizeSp = 22f, bold = true)
-            if (providers.isEmpty()) text(getString(R.string.connect_ui_caregiver_no_providers))
-            providers.forEach { provider ->
-                val configured = provider.isConfigured(this, contact)
-                val label = getString(
-                    if (configured) R.string.connect_ui_caregiver_provider_on else R.string.connect_ui_caregiver_provider_off,
-                    provider.displayName,
-                )
-                provider.setupIntent(this, contact)?.let { setup -> button(label) { startActivity(setup) } }
-                    ?: text(label)
-            }
-            button(getString(R.string.connect_ui_caregiver_remove, contact.name)) { confirmRemove(contact.lookupKey, contact.name) }
-        }
-        button(R.string.connect_ui_caregiver_open_contacts) {
-            startActivity(Intent(Intent.ACTION_VIEW, ContactsContract.Contacts.CONTENT_URI))
-        }
-
-        section(R.string.connect_ui_caregiver_mode)
-        check(R.string.connect_ui_caregiver_simple_mode, ConnectSettings.isSimpleModeEnabled(this)) {
-            ConnectSettings.setSimpleModeEnabled(this, it)
-        }
-        check(R.string.connect_ui_caregiver_launcher, isHomeLauncherEnabled()) { setHomeLauncherEnabled(it) }
-        text(getString(R.string.connect_ui_caregiver_launcher_note))
-
-        if (!IncomingCallNotifier.canUseFullScreen(this) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            button(R.string.connect_ui_caregiver_fullscreen_permission) {
-                startActivity(Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT, android.net.Uri.parse("package:$packageName")))
-            }
+    // ── Avisos ────────────────────────────────────────────────────────────────────────────────
+    private fun renderAlerts() {
+        alerts.removeAllViews()
+        if (!FamilyContacts.canRead(this)) alert(R.string.connect_ui_config_alert_contacts) { requestContacts() }
+        if (getSystemService(TelecomManager::class.java)?.defaultDialerPackage != packageName) {
+            alert(R.string.connect_ui_config_alert_dialer) { requestDialerRole() }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
-            button(R.string.connect_ui_caregiver_notifications_permission) {
-                requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 81)
+            alert(R.string.connect_ui_config_alert_notifications) {
+                requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQ_NOTIFICATIONS)
             }
         }
-
-        section(R.string.connect_ui_caregiver_original)
-        button(R.string.connect_ui_open_full_phone) { startActivity(HomeActivity.fullPhoneIntent(this)) }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && !IncomingCallNotifier.canUseFullScreen(this)) {
+            alert(R.string.connect_ui_config_alert_fullscreen) {
+                startActivity(Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT, Uri.parse("package:$packageName")))
+            }
+        }
+        alerts.visibility = if (alerts.childCount == 0) View.GONE else View.VISIBLE
     }
 
-    // ── Família: escolher e remover (marca/desmarca o favorito na agenda) ──────────────────────
+    private fun alert(textRes: Int, onClick: () -> Unit) {
+        val view = LayoutInflater.from(this).inflate(R.layout.connect_ui_config_alert, alerts, false) as TextView
+        view.setText(textRes)
+        view.setOnClickListener { onClick() }
+        alerts.addView(view)
+    }
+
+    // ── Família ───────────────────────────────────────────────────────────────────────────────
+    private fun renderFamily() {
+        familyList.removeAllViews()
+        val family = FamilyContacts.favorites(this)
+        if (family.isEmpty()) {
+            familyList.addView(TextView(this).apply {
+                setText(R.string.connect_ui_caregiver_empty)
+                textSize = 18f
+                setTextColor(getColor(R.color.connect_texto_suave))
+                setPadding(0, 0, 0, dp(12))
+            })
+        }
+        family.forEach { familyList.addView(familyRow(it)) }
+    }
+
+    private fun familyRow(contact: FamilyContact): View {
+        val row = LayoutInflater.from(this).inflate(R.layout.connect_ui_config_row, familyList, false)
+        row.findViewById<TextView>(R.id.connect_ui_config_row_name).text = contact.name
+        bindAvatar(
+            this, contact,
+            row.findViewById<ImageView>(R.id.connect_ui_config_row_photo),
+            row.findViewById(R.id.connect_ui_config_row_initials), dp(56),
+        )
+        val providers = ConnectServices.videoProviders()
+        val configured = providers.firstOrNull { it.isConfigured(this, contact) }
+        row.findViewById<TextView>(R.id.connect_ui_config_row_status).apply {
+            when {
+                configured != null -> chip(this, R.string.connect_ui_config_video_on, R.drawable.connect_bg_chip_ok, R.color.connect_chip_ok_texto)
+                contact.phoneNumber.isNullOrBlank() -> chip(this, R.string.connect_ui_config_no_number, R.drawable.connect_bg_chip_aviso, R.color.connect_chip_aviso_texto)
+                else -> chip(this, R.string.connect_ui_config_calls_only, R.drawable.connect_bg_chip_neutro, R.color.connect_chip_neutro_texto)
+            }
+        }
+        // Tocar na linha: configurar o vídeo (o fornecedor já configurado ou o primeiro disponível).
+        val setup = (configured ?: providers.firstOrNull())?.setupIntent(this, contact)
+        row.contentDescription = getString(R.string.connect_ui_config_row_description, contact.name)
+        row.setOnClickListener {
+            if (setup != null) startActivity(setup)
+            else Toast.makeText(this, R.string.connect_ui_caregiver_no_providers, Toast.LENGTH_LONG).show()
+        }
+        row.findViewById<View>(R.id.connect_ui_config_row_remove).apply {
+            contentDescription = getString(R.string.connect_ui_caregiver_remove, contact.name)
+            setOnClickListener { confirmRemove(contact) }
+        }
+        return row
+    }
+
+    private fun chip(view: TextView, textRes: Int, bgRes: Int, colorRes: Int) {
+        view.setText(textRes)
+        view.setBackgroundResource(bgRes)
+        view.setTextColor(getColor(colorRes))
+    }
+
     private fun pickContact() {
         if (!FamilyContacts.canRead(this)) return requestContacts()
         startActivityForResult(Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI), REQ_PICK)
@@ -120,16 +169,17 @@ class CaregiverActivity : Activity() {
         if (requestCode == REQ_PICK && resultCode == RESULT_OK && uri != null) setStarred(uri, true)
     }
 
-    private fun confirmRemove(lookupKey: String, name: String) {
+    private fun confirmRemove(contact: FamilyContact) {
         AlertDialog.Builder(this)
-            .setMessage(getString(R.string.connect_ui_caregiver_remove_confirm, name))
+            .setMessage(getString(R.string.connect_ui_caregiver_remove_confirm, contact.name))
             .setPositiveButton(R.string.connect_ui_caregiver_remove_yes) { _, _ ->
-                setStarred(ContactsContract.Contacts.CONTENT_LOOKUP_URI.buildUpon().appendPath(lookupKey).build(), false)
+                setStarred(ContactsContract.Contacts.CONTENT_LOOKUP_URI.buildUpon().appendPath(contact.lookupKey).build(), false)
             }
             .setNegativeButton(R.string.connect_ui_caregiver_cancel, null)
             .show()
     }
 
+    /** Marca ou desmarca o contacto como favorito na agenda. A família são os favoritos. */
     private fun setStarred(contactUri: Uri, starred: Boolean) {
         if (checkSelfPermission(Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             pendingStar = if (starred) contactUri else null
@@ -154,16 +204,26 @@ class CaregiverActivity : Activity() {
         requestPermissions(arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS), REQ_CONTACTS)
     }
 
+    private fun requestDialerRole() {
+        val request = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            getSystemService(RoleManager::class.java).createRequestRoleIntent(RoleManager.ROLE_DIALER)
+        } else {
+            Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
+                .putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
+        }
+        startActivityForResult(request, REQ_DIALER)
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         val granted = grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }
-        when (requestCode) {
-            REQ_WRITE_CONTACTS -> pendingStar.also { pendingStar = null }?.let { if (granted) setStarred(it, true) }
-            REQ_CONTACTS -> render()
+        if (requestCode == REQ_WRITE_CONTACTS) {
+            pendingStar.also { pendingStar = null }?.let { if (granted) setStarred(it, true) }
         }
+        render()
     }
 
-    // ── Ecrã principal (launcher) do tablet dedicado ───────────────────────────────────────────
+    // ── Ecrã principal (launcher) do aparelho dedicado ───────────────────────────────────────
     private fun homeAlias() = ComponentName(packageName, "pt.familia.connect.ui.HomeLauncherAlias")
 
     private fun isHomeLauncherEnabled() =
@@ -178,43 +238,13 @@ class CaregiverActivity : Activity() {
         if (enabled) startActivity(Intent(Settings.ACTION_HOME_SETTINGS))
     }
 
-    // ── Pequenos construtores de vistas (sem layouts XML para um ecrã de configuração simples) ─
-    private fun section(res: Int) = text(getString(res), sizeSp = 24f, bold = true, topDp = 28)
-
-    private fun text(value: String, sizeSp: Float = 18f, bold: Boolean = false, topDp: Int = 8) {
-        list.addView(TextView(this).apply {
-            text = value
-            textSize = sizeSp
-            if (bold) setTypeface(typeface, android.graphics.Typeface.BOLD)
-            setPadding(0, dp(topDp), 0, 0)
-        })
-    }
-
-    private fun button(res: Int, onClick: () -> Unit) = button(getString(res), onClick)
-
-    private fun button(label: String, onClick: () -> Unit) {
-        list.addView(Button(this).apply {
-            text = label
-            isAllCaps = false
-            textSize = 18f
-            setOnClickListener { onClick() }
-        })
-    }
-
-    private fun check(res: Int, value: Boolean, onChange: (Boolean) -> Unit) {
-        list.addView(CheckBox(this).apply {
-            setText(res)
-            textSize = 18f
-            isChecked = value
-            setOnCheckedChangeListener { _, checked -> onChange(checked) }
-        })
-    }
-
     private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
 
     private companion object {
         const val REQ_PICK = 91
         const val REQ_WRITE_CONTACTS = 92
         const val REQ_CONTACTS = 93
+        const val REQ_NOTIFICATIONS = 94
+        const val REQ_DIALER = 95
     }
 }

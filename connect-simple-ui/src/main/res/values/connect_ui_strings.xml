@@ -52,4 +52,13 @@
     <string name="connect_ui_caregiver_notifications_permission">Permitir notificações de chamadas</string>
     <string name="connect_ui_caregiver_original">Telefone completo</string>
     <string name="connect_ui_open_full_phone">☎  Telefone completo (marcador, histórico, definições)</string>
+
+    <string name="connect_ui_config_alert_contacts">⚠  Toque aqui para permitir o acesso aos contactos</string>
+    <string name="connect_ui_config_alert_dialer">⚠  Toque aqui para este aparelho fazer e receber chamadas</string>
+    <string name="connect_ui_config_alert_notifications">⚠  Toque aqui para permitir avisos de chamadas</string>
+    <string name="connect_ui_config_alert_fullscreen">⚠  Toque aqui para as chamadas aparecerem em ecrã inteiro</string>
+    <string name="connect_ui_config_video_on">Vídeo configurado</string>
+    <string name="connect_ui_config_calls_only">Só chamadas · configurar vídeo</string>
+    <string name="connect_ui_config_no_number">Sem número de telefone</string>
+    <string name="connect_ui_config_row_description">%1$s. Toque para configurar a videochamada.</string>
 </resources>

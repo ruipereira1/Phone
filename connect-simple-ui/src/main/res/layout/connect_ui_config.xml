@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Figma: "M5 · Configuração". Telemóvel e tablet (margem lateral maior em ≥ 600 dp). -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/connect_config_margem"
+        android:paddingTop="32dp"
+        android:paddingEnd="@dimen/connect_config_margem"
+        android:paddingBottom="32dp">
+
+        <TextView
+            style="@style/ConnectConfig.Titulo"
+            android:text="@string/connect_ui_caregiver_title" />
+
+        <TextView
+            style="@style/ConnectConfig.Nota"
+            android:layout_marginTop="6dp"
+            android:text="@string/connect_ui_caregiver_hint" />
+
+        <!-- Avisos que precisam de ação (permissões, telefone predefinido). -->
+        <LinearLayout
+            android:id="@+id/connect_ui_config_alerts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical" />
+
+        <TextView
+            style="@style/ConnectConfig.Seccao"
+            android:text="@string/connect_ui_caregiver_family" />
+
+        <LinearLayout
+            android:id="@+id/connect_ui_config_family"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/connect_ui_config_add"
+            style="@style/ConnectConfig.Linha"
+            android:text="@string/connect_ui_caregiver_add"
+            android:textColor="@color/connect_video"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            style="@style/ConnectConfig.Seccao"
+            android:text="@string/connect_ui_caregiver_mode" />
+
+        <Switch
+            android:id="@+id/connect_ui_config_simple"
+            style="@style/ConnectConfig.Interruptor"
+            android:text="@string/connect_ui_caregiver_simple_mode" />
+
+        <Switch
+            android:id="@+id/connect_ui_config_launcher"
+            style="@style/ConnectConfig.Interruptor"
+            android:text="@string/connect_ui_caregiver_launcher" />
+
+        <TextView
+            style="@style/ConnectConfig.Nota"
+            android:layout_marginBottom="12dp"
+            android:text="@string/connect_ui_caregiver_launcher_note" />
+
+        <TextView
+            android:id="@+id/connect_ui_config_full_phone"
+            style="@style/ConnectConfig.Linha"
+            android:text="@string/connect_ui_open_full_phone"
+            android:textSize="20sp" />
+    </LinearLayout>
+</ScrollView>

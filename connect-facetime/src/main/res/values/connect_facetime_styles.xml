@@ -6,6 +6,6 @@
         <item name="android:navigationBarColor">@color/connect_escuro</item>
     </style>
 
-    <style name="ConnectFaceTime.Setup" parent="@android:style/Theme.Material.Light.DarkActionBar" />
+    <style name="ConnectFaceTime.Setup" parent="@style/ConnectConfig" />
 
 </resources>

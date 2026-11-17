@@ -27,10 +27,14 @@
             android:textStyle="bold" />
 
         <TextClock
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
             android:format12Hour="EEEE, d 'de' MMMM"
             android:format24Hour="EEEE, d 'de' MMMM"
+            android:autoSizeMaxTextSize="24sp"
+            android:autoSizeMinTextSize="16sp"
+            android:autoSizeTextType="uniform"
+            android:maxLines="1"
             android:textColor="@color/connect_texto_suave"
             android:textSize="24sp" />
     </LinearLayout>
