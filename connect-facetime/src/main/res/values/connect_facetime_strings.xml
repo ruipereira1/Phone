@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Fossify Connect · connect-facetime. Língua de origem: português de Portugal. -->
 <resources>
-    <string name="connect_facetime_status_joining">Videochamada com %1$s</string>
-    <string name="connect_facetime_hangup">DESLIGAR</string>
-    <string name="connect_facetime_mic_on">Microfone\nligado</string>
-    <string name="connect_facetime_mic_off">Microfone\nDESLIGADO</string>
-    <string name="connect_facetime_vol_down">Volume −</string>
-    <string name="connect_facetime_vol_up">Volume +</string>
+    <string name="connect_facetime_status_joining">%1$s · FaceTime</string>
+    <string name="connect_facetime_hangup">Desligar</string>
+    <string name="connect_facetime_mic_on">Microfone</string>
+    <string name="connect_facetime_mic_off">Microfone\ndesligado</string>
+    <string name="connect_facetime_vol_down">Mais baixo</string>
+    <string name="connect_facetime_vol_up">Mais alto</string>
     <string name="connect_facetime_default_owner">Um familiar</string>
     <string name="connect_facetime_sms_waiting">%1$s está à sua espera na videochamada FaceTime. Abra o FaceTime e aceite a entrada.</string>
 

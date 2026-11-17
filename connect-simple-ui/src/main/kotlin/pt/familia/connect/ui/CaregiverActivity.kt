@@ -49,6 +49,7 @@ class CaregiverActivity : Activity() {
     private fun render() {
         list.removeAllViews()
 
+        text(getString(R.string.connect_ui_caregiver_hint))
         section(R.string.connect_ui_caregiver_family)
         button(R.string.connect_ui_caregiver_edit_favorites) {
             startActivity(Intent(Intent.ACTION_VIEW, ContactsContract.Contacts.CONTENT_URI))

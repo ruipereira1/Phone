@@ -44,12 +44,14 @@ Kotlin 2.4 do projeto e o APK final. É a primeira coisa que o CI (`connect-buil
 
 | # | Teste | Resultado |
 |---|---|---|
-| 2.1 | Favoritos aparecem com fotografia grande e nome (2 a 5 colunas, telemóvel e tablet de 10″/13″) | POR VALIDAR |
+| 2.1 | Favoritos aparecem com fotografia grande, nome e botões Ligar/Vídeo (2 a 5 colunas, telemóvel e tablet de 10″/13″), iguais ao Figma "1 · Início" | POR VALIDAR |
+| 2.1b | Um toque em Ligar inicia a chamada telefónica (sem ecrã intermédio) | POR VALIDAR |
+| 2.1c | Chamada perdida de um familiar mostra o aviso; depois de ligar de volta, o aviso desaparece | POR VALIDAR |
 | 2.2 | Sem fotografia: aparecem as iniciais | POR VALIDAR |
-| 2.3 | O toque longo de 3 s na engrenagem abre a configuração; um toque curto não abre | POR VALIDAR |
+| 2.3 | O toque longo de 3 s no relógio abre a configuração; um toque curto não abre | POR VALIDAR |
 | 2.4 | O "voltar" não sai do ecrã principal | POR VALIDAR |
 | 2.5 | Uso como ecrã principal (HOME) ligado e desligado | POR VALIDAR |
-| 2.6 | TalkBack lê "Ligar a <nome>" | POR VALIDAR |
+| 2.6 | O TalkBack lê "Ligar a <nome>" e "Videochamada com <nome>" | POR VALIDAR |
 
 ## 3. FaceTime (links oficiais) — matriz do PROJECT.md
 

@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Um familiar: fotografia grande e o nome por baixo. -->
+<!-- Figma: componente "Cartão familiar". Fotografia, nome e Ligar/Vídeo diretos (96 dp). -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground"
+    android:background="@drawable/connect_bg_cartao"
+    android:elevation="4dp"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:paddingBottom="16dp">
 
     <FrameLayout
         android:id="@+id/connect_ui_tile_frame"
         android:layout_width="match_parent"
-        android:layout_height="240dp">
+        android:layout_height="240dp"
+        android:background="@drawable/connect_bg_foto_topo"
+        android:clipToOutline="true">
 
         <ImageView
             android:id="@+id/connect_ui_tile_photo"
@@ -26,7 +29,7 @@
             android:gravity="center"
             android:importantForAccessibility="no"
             android:textColor="@android:color/white"
-            android:textSize="72sp"
+            android:textSize="120sp"
             android:textStyle="bold"
             android:visibility="gone" />
     </FrameLayout>
@@ -37,8 +40,32 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:gravity="center"
-        android:maxLines="2"
-        android:paddingTop="8dp"
-        android:textSize="32sp"
+        android:maxLines="1"
+        android:paddingTop="16dp"
+        android:paddingBottom="12dp"
+        android:textSize="40sp"
         android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/connect_ui_tile_call"
+        style="@style/ConnectBotao"
+        android:layout_width="match_parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/connect_bg_ligar"
+        android:drawableStart="@drawable/connect_ic_telefone"
+        android:focusable="true"
+        android:text="@string/connect_ui_call" />
+
+    <Button
+        android:id="@+id/connect_ui_tile_video"
+        style="@style/ConnectBotao"
+        android:layout_width="match_parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/connect_bg_video"
+        android:drawableStart="@drawable/connect_ic_video"
+        android:focusable="true"
+        android:text="@string/connect_ui_video" />
 </LinearLayout>

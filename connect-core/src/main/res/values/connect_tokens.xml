@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tokens do Fossify Connect: espelham as variáveis "Connect" do ficheiro Figma
+     "Fossify Connect — Interface simplificada". -->
+<resources>
+    <color name="connect_fundo">#FFF6F3EC</color>
+    <color name="connect_cartao">#FFFFFFFF</color>
+    <color name="connect_texto">#FF111111</color>
+    <color name="connect_texto_suave">#FF4A4A4A</color>
+    <color name="connect_ligar">#FF1B7A3A</color>
+    <color name="connect_video">#FF0B5CAD</color>
+    <color name="connect_desligar">#FFC62828</color>
+    <color name="connect_escuro">#FF101418</color>
+    <color name="connect_escuro_controlo">#FF2C3640</color>
+    <color name="connect_aviso_fundo">#FFFFF4E5</color>
+    <color name="connect_aviso_borda">#FFE0A04A</color>
+    <color name="connect_sub_escuro">#FFC9D1D9</color>
+
+    <dimen name="connect_raio_cartao">28dp</dimen>
+    <dimen name="connect_raio_botao">20dp</dimen>
+    <dimen name="connect_raio_botao_grande">28dp</dimen>
+    <dimen name="connect_espaco_pagina">40dp</dimen>
+    <dimen name="connect_espaco_grelha">28dp</dimen>
+    <dimen name="connect_botao_altura">96dp</dimen>
+    <dimen name="connect_botao_grande_altura">150dp</dimen>
+</resources>

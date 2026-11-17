@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="ConnectFaceTime.Call" parent="@android:style/Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@android:color/black</item>
-        <item name="android:statusBarColor">@android:color/black</item>
-        <item name="android:navigationBarColor">@android:color/black</item>
+        <item name="android:windowBackground">@color/connect_escuro</item>
+        <item name="android:statusBarColor">@color/connect_escuro</item>
+        <item name="android:navigationBarColor">@color/connect_escuro</item>
     </style>
 
     <style name="ConnectFaceTime.Setup" parent="@android:style/Theme.Material.Light.DarkActionBar" />
 
-    <style name="ConnectFaceTime.BigButton" parent="@android:style/Widget.Material.Button">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:layout_margin">8dp</item>
-        <item name="android:textSize">26sp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textAllCaps">false</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:backgroundTint">#FF37474F</item>
-    </style>
 </resources>

@@ -1,45 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Alto contraste: fundo branco, texto preto e botões com cores escuras saturadas. -->
+<!-- Segue o ficheiro Figma "Fossify Connect — Interface simplificada" (tokens em connect-core). -->
 <resources>
-    <color name="connect_ui_bg">#FFFFFFFF</color>
-    <color name="connect_ui_text">#FF000000</color>
-    <color name="connect_ui_call">#FF1B5E20</color>
-    <color name="connect_ui_video">#FF0D47A1</color>
-    <color name="connect_ui_reject">#FFB71C1C</color>
-    <color name="connect_ui_neutral">#FF37474F</color>
-
     <style name="ConnectUi" parent="@android:style/Theme.Material.Light.NoActionBar">
-        <item name="android:windowBackground">@color/connect_ui_bg</item>
-        <item name="android:textColor">@color/connect_ui_text</item>
-        <item name="android:statusBarColor">@color/connect_ui_bg</item>
+        <item name="android:windowBackground">@color/connect_fundo</item>
+        <item name="android:statusBarColor">@color/connect_fundo</item>
+        <item name="android:navigationBarColor">@color/connect_fundo</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:textColor">@color/connect_texto</item>
+        <item name="android:fontFamily">@font/connect_atkinson</item>
     </style>
 
     <style name="ConnectUi.Incoming" parent="@android:style/Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:windowBackground">@color/connect_escuro</item>
+        <item name="android:statusBarColor">@color/connect_escuro</item>
+        <item name="android:navigationBarColor">@color/connect_escuro</item>
         <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/connect_atkinson</item>
     </style>
 
-    <style name="ConnectUi.Caregiver" parent="@android:style/Theme.Material.Light.DarkActionBar" />
-
-    <style name="ConnectUi.HugeButton" parent="@android:style/Widget.Material.Button">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:layout_margin">12dp</item>
-        <item name="android:minHeight">120dp</item>
-        <item name="android:textSize">40sp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textAllCaps">false</item>
-        <item name="android:textColor">@android:color/white</item>
-    </style>
-
-    <style name="ConnectUi.SmallButton" parent="@android:style/Widget.Material.Button">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">64dp</item>
-        <item name="android:textSize">22sp</item>
-        <item name="android:textAllCaps">false</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:backgroundTint">@color/connect_ui_neutral</item>
+    <style name="ConnectUi.Caregiver" parent="@android:style/Theme.Material.Light.DarkActionBar">
+        <item name="android:fontFamily">@font/connect_atkinson</item>
     </style>
 </resources>

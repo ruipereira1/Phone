@@ -26,7 +26,9 @@ no próprio código, para ser fácil de encontrar num conflito de merge.
 |---|---|---|
 | `junit:junit:4.13.2` | `testImplementation` de `connect-facetime` | Testes da validação de links. Não vai no APK. |
 
-Não há dependências de execução novas. Os módulos usam só a plataforma Android: `Activity`,
+| Atkinson Hyperlegible (Braille Institute) | `connect-core/src/main/res/font` | Letra desenhada para baixa visão. Ficheiros de letra com licença SIL OFL 1.1 (`connect-core/licenses/`), compatível com distribuição numa app GPL. Não é uma biblioteca de código. |
+
+Não há dependências de execução (bibliotecas) novas. Os módulos usam só a plataforma Android: `Activity`,
 `WebView`, `Keystore`, `ContactsContract`, `Telecom`.
 
 ## Comportamento que muda para o utilizador
