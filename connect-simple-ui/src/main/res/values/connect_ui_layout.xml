@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- false = telemóvel (Figma "M1…M5"); true = tablet ≥ 600 dp (Figma "1…5"). -->
+    <bool name="connect_ui_tablet">false</bool>
+</resources>

@@ -34,7 +34,7 @@ import java.util.concurrent.Executors
  * - Aviso de chamada perdida de um familiar, com "Ligar de volta".
  * - Um cartão por familiar (favoritos da agenda), com Ligar e Vídeo diretos: um toque e a
  *   chamada começa. Não há ecrã intermédio.
- * - De 2 a 5 colunas, conforme a largura (telemóvel até tablet de 15″).
+ * - Telemóvel: uma coluna de cartões, a deslizar. Tablet: 2 a 5 colunas, conforme a largura.
  */
 class HomeActivity : Activity() {
 
@@ -59,7 +59,7 @@ class HomeActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        grid.numColumns = columnsFor(resources.configuration.screenWidthDp)
+        grid.numColumns = columnsFor(resources.configuration.screenWidthDp, isTablet())
         val missing = listOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG)
             .filter { checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED }
         if (missing.isNotEmpty()) requestPermissions(missing.toTypedArray(), REQ_PERMISSIONS)
@@ -146,6 +146,8 @@ class HomeActivity : Activity() {
         super.onDestroy()
     }
 
+    private fun isTablet() = resources.getBoolean(R.bool.connect_ui_tablet)
+
     private inner class FamilyAdapter : BaseAdapter() {
         var items: List<FamilyContact> = emptyList()
 
@@ -159,7 +161,8 @@ class HomeActivity : Activity() {
             val contact = items[position]
             // Largura do ecrã e não do pai: na primeira medição, o pai ainda pode ter largura 0.
             val size = resources.displayMetrics.widthPixels / maxOf(grid.numColumns, 1)
-            view.findViewById<View>(R.id.connect_ui_tile_frame).layoutParams.height = (size * 0.75).toInt()
+            // Tablet: a fotografia acompanha a largura da coluna. Telemóvel: círculo fixo de 112 dp.
+            if (isTablet()) view.findViewById<View>(R.id.connect_ui_tile_frame).layoutParams.height = (size * 0.75).toInt()
             view.findViewById<TextView>(R.id.connect_ui_tile_name).text = contact.name
             bindAvatar(
                 this@HomeActivity, contact,
@@ -187,8 +190,12 @@ class HomeActivity : Activity() {
         private const val REQ_DIALER = 62
         private const val CAREGIVER_HOLD_MS = 3000L
 
-        /** Uma coluna por cada ~300 dp: 2 num telemóvel, 4 num tablet de 10″ deitado, até 5 em 15″. */
-        internal fun columnsFor(widthDp: Int) = (widthDp / 300).coerceIn(2, 5)
+        /**
+         * Telemóvel (Figma "M1"): 1 coluna ao alto e 2 deitado.
+         * Tablet (Figma "1"): uma coluna por cada ~300 dp, ou seja 4 num tablet de 10″ deitado e até 5 em 15″.
+         */
+        internal fun columnsFor(widthDp: Int, tablet: Boolean) =
+            if (tablet) (widthDp / 300).coerceIn(2, 5) else if (widthDp >= 600) 2 else 1
 
         /** Fossify Phone completa (histórico, marcador, definições), através do filtro que a MainActivity já tem. */
         internal fun fullPhoneIntent(activity: Activity): Intent =

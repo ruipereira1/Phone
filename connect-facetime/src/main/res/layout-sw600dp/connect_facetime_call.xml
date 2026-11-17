@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Figma: "4 · Videochamada". Página oficial da Apple em cima; controlos grandes em baixo:
+     Microfone · Mais baixo · Mais alto · Desligar (mais largo, vermelho). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/connect_escuro"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/connect_facetime_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/connect_bg_controlo"
+        android:fontFamily="@font/connect_atkinson"
+        android:paddingStart="22dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="22dp"
+        android:paddingBottom="10dp"
+        android:textColor="@android:color/white"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <WebView
+        android:id="@+id/connect_facetime_web"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="24dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="14dp">
+
+        <Button
+            android:id="@+id/connect_facetime_mic"
+            style="@style/ConnectControlo"
+            android:drawableTop="@drawable/connect_ic_microfone" />
+
+        <Button
+            android:id="@+id/connect_facetime_vol_down"
+            style="@style/ConnectControlo"
+            android:drawableTop="@drawable/connect_ic_volume_menos"
+            android:text="@string/connect_facetime_vol_down" />
+
+        <Button
+            android:id="@+id/connect_facetime_vol_up"
+            style="@style/ConnectControlo"
+            android:drawableTop="@drawable/connect_ic_volume_mais"
+            android:text="@string/connect_facetime_vol_up" />
+
+        <Button
+            android:id="@+id/connect_facetime_hangup"
+            style="@style/ConnectControlo"
+            android:layout_weight="2"
+            android:background="@drawable/connect_bg_controlo_desligar"
+            android:drawableStart="@drawable/connect_ic_desligar"
+            android:drawablePadding="14dp"
+            android:paddingStart="40dp"
+            android:paddingEnd="40dp"
+            android:text="@string/connect_facetime_hangup"
+            android:textSize="34sp" />
+    </LinearLayout>
+</LinearLayout>

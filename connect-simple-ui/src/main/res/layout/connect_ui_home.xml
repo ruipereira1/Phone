@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Figma: "1 · Início". Relógio e data (toque longo de 3 s = configuração), aviso de chamada
-     perdida e cartões da família com Ligar e Vídeo diretos (um toque). -->
+<!-- Figma: "M1 · Início (telemóvel)". Uma coluna; relógio por cima da data; aviso de chamada
+     perdida com o botão a toda a largura. Os IDs são os mesmos da versão de tablet. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,13 +10,11 @@
         android:id="@+id/connect_ui_home_clock"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:baselineAligned="true"
         android:contentDescription="@string/connect_ui_home_clock_description"
-        android:gravity="bottom"
-        android:orientation="horizontal"
-        android:paddingStart="@dimen/connect_espaco_pagina"
-        android:paddingTop="28dp"
-        android:paddingEnd="@dimen/connect_espaco_pagina"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="24dp"
+        android:paddingEnd="16dp"
         android:paddingBottom="12dp">
 
         <TextClock
@@ -25,26 +23,16 @@
             android:format12Hour="HH:mm"
             android:format24Hour="HH:mm"
             android:textColor="@color/connect_texto"
-            android:textSize="64sp"
+            android:textSize="56sp"
             android:textStyle="bold" />
 
         <TextClock
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_weight="1"
-            android:format12Hour="EEEE, d 'de' MMMM"
-            android:format24Hour="EEEE, d 'de' MMMM"
-            android:maxLines="1"
-            android:textColor="@color/connect_texto_suave"
-            android:textSize="30sp" />
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/connect_ui_home_title"
-            android:textSize="40sp"
-            android:textStyle="bold" />
+            android:format12Hour="EEEE, d 'de' MMMM"
+            android:format24Hour="EEEE, d 'de' MMMM"
+            android:textColor="@color/connect_texto_suave"
+            android:textSize="24sp" />
     </LinearLayout>
 
     <Button
@@ -52,71 +40,71 @@
         style="@style/ConnectBotao"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/connect_espaco_pagina"
-        android:layout_marginEnd="@dimen/connect_espaco_pagina"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="12dp"
         android:background="@drawable/connect_bg_desligar"
-        android:padding="20dp"
+        android:padding="16dp"
         android:text="@string/connect_ui_home_not_default"
-        android:textSize="26sp"
+        android:textSize="22sp"
         android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/connect_ui_home_missed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/connect_espaco_pagina"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="@dimen/connect_espaco_pagina"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/connect_bg_aviso"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="24dp"
-        android:paddingTop="18dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="18dp"
+        android:orientation="vertical"
+        android:padding="16dp"
         android:visibility="gone">
 
-        <ImageView
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:importantForAccessibility="no"
-            android:src="@drawable/connect_ic_chamada_perdida" />
-
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/connect_ui_home_missed_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="30sp"
-                android:textStyle="bold" />
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/connect_ic_chamada_perdida" />
 
-            <TextView
-                android:id="@+id/connect_ui_home_missed_when"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textColor="@color/connect_texto_suave"
-                android:textSize="24sp" />
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/connect_ui_home_missed_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/connect_ui_home_missed_when"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/connect_texto_suave"
+                    android:textSize="20sp" />
+            </LinearLayout>
         </LinearLayout>
 
         <Button
             android:id="@+id/connect_ui_home_missed_call"
             style="@style/ConnectBotao"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="80dp"
+            android:layout_marginTop="14dp"
             android:minHeight="80dp"
             android:background="@drawable/connect_bg_ligar"
             android:drawableStart="@drawable/connect_ic_telefone"
-            android:paddingStart="28dp"
-            android:paddingEnd="28dp"
             android:text="@string/connect_ui_call_back"
             android:textSize="28sp" />
     </LinearLayout>
@@ -132,24 +120,23 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:descendantFocusability="afterDescendants"
-            android:horizontalSpacing="@dimen/connect_espaco_grelha"
+            android:horizontalSpacing="16dp"
             android:listSelector="@android:color/transparent"
-            android:numColumns="4"
-            android:paddingStart="@dimen/connect_espaco_pagina"
-            android:paddingTop="8dp"
-            android:paddingEnd="@dimen/connect_espaco_pagina"
-            android:paddingBottom="@dimen/connect_espaco_pagina"
+            android:numColumns="1"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="24dp"
             android:stretchMode="columnWidth"
-            android:verticalSpacing="@dimen/connect_espaco_grelha" />
+            android:verticalSpacing="16dp" />
 
         <TextView
             android:id="@+id/connect_ui_home_empty"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:padding="32dp"
+            android:padding="24dp"
             android:text="@string/connect_ui_home_empty"
-            android:textSize="30sp"
+            android:textSize="26sp"
             android:visibility="gone" />
     </FrameLayout>
 </LinearLayout>

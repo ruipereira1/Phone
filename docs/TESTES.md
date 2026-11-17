@@ -45,6 +45,7 @@ Kotlin 2.4 do projeto e o APK final. É a primeira coisa que o CI (`connect-buil
 | # | Teste | Resultado |
 |---|---|---|
 | 2.1 | Favoritos aparecem com fotografia grande, nome e botões Ligar/Vídeo (2 a 5 colunas, telemóvel e tablet de 10″/13″), iguais ao Figma "1 · Início" | POR VALIDAR |
+| 2.1m | Telemóvel ao alto (≈ 412 dp): uma coluna, cartões como o Figma "M1", botões Ligar/Vídeo sem texto cortado; deitado: 2 colunas | POR VALIDAR |
 | 2.1b | Um toque em Ligar inicia a chamada telefónica (sem ecrã intermédio) | POR VALIDAR |
 | 2.1c | Chamada perdida de um familiar mostra o aviso; depois de ligar de volta, o aviso desaparece | POR VALIDAR |
 | 2.2 | Sem fotografia: aparecem as iniciais | POR VALIDAR |
