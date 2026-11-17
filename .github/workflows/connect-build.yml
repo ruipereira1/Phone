@@ -27,8 +27,8 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Testes unitários dos módulos Connect
-        run: ./gradlew --no-daemon :connect-facetime:testDebugUnitTest
+      - name: Testes unitários (app + módulos Connect)
+        run: ./gradlew --no-daemon :app:testFossDebugUnitTest :connect-facetime:testDebugUnitTest
 
       - name: APK de testes (foss, debug)
         run: ./gradlew --no-daemon :app:assembleFossDebug
