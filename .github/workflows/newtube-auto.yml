@@ -1,0 +1,96 @@
+name: NewTube Auto
+
+# Builds the Android Auto fork of NewTube (NewTube + car screens) and publishes the APK on the
+# "newtube-auto" release of this repository.
+on:
+  push:
+    branches: [ "newtube-auto" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: newtube-auto
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Install the NDK
+        run: (yes || true) | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;21.0.6113669" > /dev/null
+
+      # One signing key for every build, so new APKs install over the old one. It lives only in
+      # this repository's private Actions cache; the first run creates it.
+      - name: Restore the signing key
+        id: key
+        uses: actions/cache@v4
+        with:
+          path: ~/.newtube-auto-key
+          key: newtube-auto-signing-key-v1
+
+      - name: Create the signing key (first run only)
+        if: steps.key.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.newtube-auto-key
+          pw="$(openssl rand -hex 16)"
+          printf '%s' "$pw" > ~/.newtube-auto-key/pw
+          keytool -genkeypair -keystore ~/.newtube-auto-key/key.jks -storetype PKCS12 \
+            -alias newtubeauto -keyalg RSA -keysize 4096 -validity 36500 \
+            -storepass "$pw" -keypass "$pw" -dname "CN=NewTube Auto"
+
+      - name: Configure signing
+        run: |
+          set -euo pipefail
+          pw="$(cat ~/.newtube-auto-key/pw)"
+          {
+            echo "storeFile=$HOME/.newtube-auto-key/key.jks"
+            echo "storePassword=$pw"
+            echo "keyAlias=newtubeauto"
+            echo "keyPassword=$pw"
+          } > keystore.properties
+
+      - name: Build
+        run: |
+          set -euo pipefail
+          chmod +x gradlew
+          ./gradlew --no-daemon --stacktrace :smarttubetv:assembleStmobileRelease -PautoBuild
+          mkdir dist
+          ls -R smarttubetv/build/outputs/apk | head -50
+          cp "$(ls smarttubetv/build/outputs/apk/stmobile/release/*universal*.apk | head -1)" dist/NewTube-Auto.apk
+          cp "$(ls smarttubetv/build/outputs/apk/stmobile/release/*arm64-v8a*.apk | head -1)" dist/NewTube-Auto-arm64.apk
+
+      - name: Remove the signing config
+        if: always()
+        run: rm -f keystore.properties
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NewTube-Auto
+          path: dist/*.apk
+
+      - name: Publish on the newtube-auto release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          notes="NewTube com Android Auto (build ${{ github.run_number }}, commit ${GITHUB_SHA::7}). Instala NewTube-Auto.apk."
+          if gh release view newtube-auto >/dev/null 2>&1; then
+            gh release upload newtube-auto dist/*.apk --clobber
+            gh release edit newtube-auto --notes "$notes" --prerelease
+          else
+            gh release create newtube-auto dist/*.apk --target "$GITHUB_SHA" --title "NewTube Auto" --notes "$notes" --prerelease
+          fi
