@@ -223,7 +223,7 @@ public final class AutoPlayer {
                 changed();
             }
         });
-        createSession();
+        ensureSession();
     }
 
     private void load(Video video) {
@@ -334,6 +334,27 @@ public final class AutoPlayer {
 
     // ------------------------------------------------------------------ media session (steering wheel)
 
+    /** Feeds the media browser listed, by id, so a tap in the car's music screen can play them. */
+    private final java.util.Map<String, List<Video>> mCatalog = new java.util.HashMap<>();
+
+    public void putCatalog(String feedId, List<Video> videos) {
+        mCatalog.put(feedId, new ArrayList<>(videos));
+    }
+
+    /** Media id of a browser item: {@code feedId|index}. */
+    public static String mediaId(String feedId, int index) {
+        return feedId + "|" + index;
+    }
+
+    /**
+     * The media session, created once and kept for the life of the process: the car's music screen
+     * (AutoMediaBrowserService) holds its token even while no car screen is open.
+     */
+    public MediaSessionCompat.Token ensureSession() {
+        if (mSession == null) createSession();
+        return mSession.getSessionToken();
+    }
+
     private void createSession() {
         mSession = new MediaSessionCompat(mContext, "NewTubeAuto");
         mSession.setCallback(new MediaSessionCompat.Callback() {
@@ -345,8 +366,47 @@ public final class AutoPlayer {
             @Override public void onFastForward() { seekBy(10_000); }
             @Override public void onRewind() { seekBy(-10_000); }
             @Override public void onStop() { release(); }
+
+            @Override
+            public void onPlayFromMediaId(String mediaId, android.os.Bundle extras) {
+                if (mediaId == null) return;
+                int bar = mediaId.lastIndexOf('|');
+                if (bar < 0) return;
+                List<Video> feed = mCatalog.get(mediaId.substring(0, bar));
+                if (feed == null) return;
+                try {
+                    play(feed, Integer.parseInt(mediaId.substring(bar + 1)));
+                } catch (NumberFormatException ignored) {
+                }
+            }
+
+            @Override
+            public void onPlayFromSearch(String query, android.os.Bundle extras) {
+                playSearch(query);
+            }
         });
         mSession.setActive(true);
+    }
+
+    /** Voice: "play X on NewTube" - the first search result, and the rest as the queue. */
+    public void playSearch(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            if (mPlayer != null) mPlayer.setPlayWhenReady(true);
+            return;
+        }
+        mStatus = "A procurar…";
+        changed();
+        Schedulers.io().scheduleDirect(() -> {
+            List<Video> found = AutoFeeds.load(AutoFeeds.SEARCH, query.trim());
+            mHandler.post(() -> {
+                if (found.isEmpty()) {
+                    mStatus = "Sem resultados";
+                    changed();
+                } else {
+                    play(found, 0);
+                }
+            });
+        });
     }
 
     private void updateSession() {
@@ -363,7 +423,8 @@ public final class AutoPlayer {
         long actions = PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE
                 | PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_SEEK_TO
                 | PlaybackStateCompat.ACTION_FAST_FORWARD | PlaybackStateCompat.ACTION_REWIND
-                | PlaybackStateCompat.ACTION_STOP | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS;
+                | PlaybackStateCompat.ACTION_STOP | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID | PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH;
         if (hasNext()) actions |= PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
         mSession.setPlaybackState(new PlaybackStateCompat.Builder()
                 .setActions(actions)
@@ -393,9 +454,12 @@ public final class AutoPlayer {
         mPlayer = null;
         mInitializer = null;
         if (mSession != null) {
-            mSession.setActive(false);
-            mSession.release();
-            mSession = null;
+            // The session stays (the music screen holds its token); it only reports "stopped".
+            mSession.setPlaybackState(new PlaybackStateCompat.Builder()
+                    .setActions(PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID
+                            | PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH)
+                    .setState(PlaybackStateCompat.STATE_STOPPED, 0, 1f)
+                    .build());
         }
         mQueue.clear();
         mIndex = -1;
