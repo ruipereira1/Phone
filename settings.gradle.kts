@@ -17,4 +17,4 @@ dependencyResolutionManagement {
 }
 include(":app")
 // Fossify Connect: módulos independentes (ver FORK.md)
-include(":connect-core")
+include(":connect-core", ":connect-facetime")

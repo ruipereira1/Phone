@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ecrã de chamada: página da Apple em cima; botões enormes, de alto contraste, em baixo. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/connect_facetime_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="12dp"
+        android:textColor="@android:color/white"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <WebView
+        android:id="@+id/connect_facetime_web"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <Button
+            android:id="@+id/connect_facetime_mic"
+            style="@style/ConnectFaceTime.BigButton" />
+
+        <Button
+            android:id="@+id/connect_facetime_vol_down"
+            style="@style/ConnectFaceTime.BigButton"
+            android:text="@string/connect_facetime_vol_down" />
+
+        <Button
+            android:id="@+id/connect_facetime_vol_up"
+            style="@style/ConnectFaceTime.BigButton"
+            android:text="@string/connect_facetime_vol_up" />
+
+        <Button
+            android:id="@+id/connect_facetime_hangup"
+            style="@style/ConnectFaceTime.BigButton"
+            android:layout_weight="1.6"
+            android:backgroundTint="#FFC62828"
+            android:text="@string/connect_facetime_hangup"
+            android:textSize="34sp" />
+    </LinearLayout>
+</LinearLayout>

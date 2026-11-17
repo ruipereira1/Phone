@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Connect · connect-facetime. Língua de origem: português de Portugal. -->
+<resources>
+    <string name="connect_facetime_status_joining">Videochamada com %1$s</string>
+    <string name="connect_facetime_hangup">DESLIGAR</string>
+    <string name="connect_facetime_mic_on">Microfone\nligado</string>
+    <string name="connect_facetime_mic_off">Microfone\nDESLIGADO</string>
+    <string name="connect_facetime_vol_down">Volume −</string>
+    <string name="connect_facetime_vol_up">Volume +</string>
+    <string name="connect_facetime_default_owner">Um familiar</string>
+    <string name="connect_facetime_sms_waiting">%1$s está à sua espera na videochamada FaceTime. Abra o FaceTime e aceite a entrada.</string>
+
+    <string name="connect_facetime_setup_label">Configurar FaceTime</string>
+    <string name="connect_facetime_setup_title">FaceTime de %1$s</string>
+    <string name="connect_facetime_setup_steps">1. No iPhone do familiar, abra o FaceTime e toque em “Criar link”.\n2. Partilhe o link para este tablet (SMS ou email) e copie-o.\n3. Toque em “Colar” e depois em “Guardar”.\n\nO link fica guardado cifrado neste tablet. Quem tiver o link pode pedir para entrar na chamada: não o partilhe com mais ninguém.</string>
+    <string name="connect_facetime_setup_link_hint">https://facetime.apple.com/join#…</string>
+    <string name="connect_facetime_setup_paste">Colar</string>
+    <string name="connect_facetime_setup_save">Guardar</string>
+    <string name="connect_facetime_setup_test">Testar chamada</string>
+    <string name="connect_facetime_setup_remove">Remover link</string>
+    <string name="connect_facetime_setup_notify">Avisar o familiar por SMS quando o idoso ligar</string>
+    <string name="connect_facetime_setup_owner_label">Nome com que o tablet entra na chamada</string>
+    <string name="connect_facetime_setup_owner_hint">por exemplo, Avó Maria</string>
+    <string name="connect_facetime_setup_autofill">Preencher este nome automaticamente na página da Apple (experimental)</string>
+    <string name="connect_facetime_setup_incoming">Receber convites FaceTime por SMS (apenas de favoritos)</string>
+    <string name="connect_facetime_setup_status_title">Estado real desta integração</string>
+    <string name="connect_facetime_setup_invalid">Isto não é um link FaceTime válido (https://facetime.apple.com/join#…).</string>
+    <string name="connect_facetime_setup_saved">Link guardado.</string>
+    <string name="connect_facetime_setup_removed">Link removido.</string>
+    <string name="connect_facetime_setup_sms_denied">Sem a permissão de SMS esta opção não funciona.</string>
+</resources>

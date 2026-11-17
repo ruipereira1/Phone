@@ -16,6 +16,8 @@ gradlePlugins-agp = "9.4.1"
 indicatorFastScroll = "c7873f7168"
 autofitTextView = "0.2.1"
 libphonenumberVersion = "9.0.40"
+#Fossify Connect (apenas testes)
+junit = "4.13.2"
 #build
 app-build-compileSDKVersion = "36"
 app-build-targetSDK = "36"
@@ -32,6 +34,8 @@ eventbus = { module = "org.greenrobot:eventbus", version.ref = "eventbus" }
 #Kotlin
 geocoder = { module = "com.googlecode.libphonenumber:geocoder", version.ref = "geocoderVersion" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+#Fossify Connect (apenas testes)
+junit = { module = "junit:junit", version.ref = "junit" }
 #Other
 indicator-fast-scroll = { module = "org.fossify:IndicatorFastScroll", version.ref = "indicatorFastScroll" }
 autofit-text-view = { module = "me.grantland:autofittextview", version.ref = "autofitTextView" }

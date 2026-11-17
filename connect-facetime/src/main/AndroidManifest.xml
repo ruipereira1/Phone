@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Fossify Connect · connect-facetime
+  Permissões (justificação em docs/PERMISSOES.md):
+  - INTERNET: página oficial facetime.apple.com.
+  - CAMERA, RECORD_AUDIO, MODIFY_AUDIO_SETTINGS: videochamada e botão de microfone.
+  - SEND_SMS: opcional; só é pedida se o cuidador ligar "Avisar por SMS".
+  - RECEIVE_SMS: opcional; só é pedida se o cuidador ligar "Receber convites por SMS".
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+
+    <uses-feature android:name="android.hardware.camera.any" android:required="false" />
+    <uses-feature android:name="android.hardware.telephony" android:required="false" />
+
+    <application>
+        <provider
+            android:name="pt.familia.connect.facetime.FaceTimeInitializer"
+            android:authorities="${applicationId}.connect.facetime.init"
+            android:exported="false"
+            android:initOrder="10" />
+
+        <activity
+            android:name="pt.familia.connect.facetime.FaceTimeCallActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:taskAffinity=".connect.call"
+            android:theme="@style/ConnectFaceTime.Call" />
+
+        <activity
+            android:name="pt.familia.connect.facetime.FaceTimeSetupActivity"
+            android:exported="false"
+            android:label="@string/connect_facetime_setup_label"
+            android:theme="@style/ConnectFaceTime.Setup"
+            android:windowSoftInputMode="adjustResize" />
+
+        <receiver
+            android:name="pt.familia.connect.facetime.FaceTimeInviteReceiver"
+            android:enabled="false"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

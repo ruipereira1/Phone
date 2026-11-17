@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ecrã do cuidador (não é para o idoso). -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/connect_facetime_setup_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/connect_facetime_setup_steps"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/connect_facetime_setup_link"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/connect_facetime_setup_link_hint"
+            android:importantForAutofill="no"
+            android:inputType="textUri"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/connect_facetime_setup_paste"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/connect_facetime_setup_paste" />
+
+            <Button
+                android:id="@+id/connect_facetime_setup_save"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/connect_facetime_setup_save" />
+
+            <Button
+                android:id="@+id/connect_facetime_setup_test"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/connect_facetime_setup_test" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/connect_facetime_setup_remove"
+            style="@android:style/Widget.Material.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/connect_facetime_setup_remove" />
+
+        <CheckBox
+            android:id="@+id/connect_facetime_setup_notify"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/connect_facetime_setup_notify"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/connect_facetime_setup_owner_label"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/connect_facetime_setup_owner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/connect_facetime_setup_owner_hint"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName|textCapWords"
+            android:textSize="18sp" />
+
+        <CheckBox
+            android:id="@+id/connect_facetime_setup_autofill"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/connect_facetime_setup_autofill"
+            android:textSize="18sp" />
+
+        <CheckBox
+            android:id="@+id/connect_facetime_setup_incoming"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/connect_facetime_setup_incoming"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/connect_facetime_setup_status_title"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/connect_facetime_setup_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textIsSelectable="true"
+            android:textSize="16sp" />
+    </LinearLayout>
+</ScrollView>
