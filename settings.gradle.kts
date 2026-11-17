@@ -1,4 +1,4 @@
-rootProject.name = "Phone"
+rootProject.name = "FossifyConnect"
 pluginManagement {
     repositories {
         gradlePluginPortal()
