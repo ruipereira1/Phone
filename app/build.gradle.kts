@@ -146,5 +146,10 @@ dependencies {
     implementation(libs.eventbus)
     implementation(libs.libphonenumber)
     implementation(libs.geocoder)
+    // Fossify Connect: módulos independentes; cada um regista-se sozinho (ver FORK.md).
+    implementation(project(":connect-core"))
+    implementation(project(":connect-simple-ui"))
+    implementation(project(":connect-facetime"))
+    implementation(project(":connect-matrix"))
     detektPlugins(libs.compose.detekt)
 }
