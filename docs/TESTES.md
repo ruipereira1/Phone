@@ -27,7 +27,7 @@ Kotlin 2.4 do projeto e o APK final. É a primeira coisa que o CI (`connect-buil
 | # | Teste | Resultado esperado | Resultado |
 |---|---|---|---|
 | 0.1 | CI `connect-build.yml` | Testes verdes; APK gerado; applicationId `pt.familia.connect.debug` | POR VALIDAR |
-| 0.2 | Instalar ao lado da Fossify Phone original | As duas apps coexistem | POR VALIDAR |
+| 0.2 | Instalar ao lado da Fossify Phone original | As duas apps coexistem; a Play Protect não bloqueia | POR VALIDAR |
 | 0.3 | Definir o Fossify Connect como telefone predefinido (banner vermelho) | O papel de marcador é concedido | POR VALIDAR |
 | 0.4 | Mudar a cor do ícone (Fossify → Definições → Personalizar cores) | O ícone muda e não há erro | POR VALIDAR |
 
@@ -59,7 +59,7 @@ Kotlin 2.4 do projeto e o APK final. É a primeira coisa que o CI (`connect-buil
 | # | Teste | Resultado esperado | Resultado |
 |---|---|---|---|
 | 3.1 | Android → iPhone | O tablet entra no link e o iPhone recebe a SMS de aviso e admite a entrada. **Não há toque FaceTime nativo** | NÃO SUPORTADO (toque nativo) · POR VALIDAR (entrada pelo link) |
-| 3.2 | iPhone → Android | O familiar envia o link por SMS e o tablet mostra ATENDER/REJEITAR | POR VALIDAR |
+| 3.2 | iPhone → Android | Convites por SMS retirados (RECEIVE_SMS bloqueia a instalação) | NÃO SUPORTADO |
 | 3.3 | Android → Android | Fora do âmbito do FaceTime (opção D, `connect-matrix`) | NÃO SUPORTADO |
 | 3.4 | Ecrã bloqueado | O ecrã ATENDER/REJEITAR e o ecrã da chamada aparecem por cima do bloqueio | POR VALIDAR |
 | 3.5 | Reiniciar o tablet | Os links continuam configurados; os convites por SMS continuam a chegar | POR VALIDAR |
@@ -68,7 +68,6 @@ Kotlin 2.4 do projeto e o APK final. É a primeira coisa que o CI (`connect-buil
 | 3.8 | Câmara | Vídeo nos dois sentidos (câmara frontal) | POR VALIDAR |
 | 3.9 | Wi-Fi e dados móveis | As duas redes funcionam | POR VALIDAR |
 | 3.10 | Preenchimento automático do nome | O nome aparece na página da Apple | POR VALIDAR (experimental) |
-| 3.11 | Link de remetente que não está nos favoritos | É ignorado | POR VALIDAR |
 | 3.12 | Android 14+: full-screen intent concedido ao marcador | O ecrã inteiro aparece com o tablet bloqueado | POR VALIDAR |
 
 ## Registo de logs

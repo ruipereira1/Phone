@@ -42,8 +42,8 @@ class FaceTimeProvider : VideoCallProvider {
     override fun capabilities() = listOf(
         Capability("Android → iPhone com toque FaceTime", NAO_SUPORTADO,
             "A Apple não permite iniciar chamadas FaceTime fora dos seus dispositivos. O tablet entra no link e o familiar é avisado por SMS."),
-        Capability("iPhone → Android", POR_VALIDAR,
-            "O familiar envia o link por SMS e o tablet mostra ATENDER/REJEITAR. Precisa da opção de convites por SMS ligada."),
+        Capability("iPhone → Android", NAO_SUPORTADO,
+            "A deteção automática de convites por SMS foi retirada: a permissão RECEIVE_SMS faz a Play Protect bloquear a instalação. Fica por resolver com outro canal."),
         Capability("Câmara e microfone", POR_VALIDAR, "Página web da Apple dentro da WebView (Chromium)."),
         Capability("Ecrã bloqueado", POR_VALIDAR, "A atividade da chamada abre por cima do ecrã de bloqueio."),
         Capability("Atender sem intervenção", NAO_SUPORTADO, "O iPhone que criou o link tem de admitir quem entra."),

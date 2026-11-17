@@ -5,7 +5,8 @@
   - INTERNET: página oficial facetime.apple.com.
   - CAMERA, RECORD_AUDIO, MODIFY_AUDIO_SETTINGS: videochamada e botão de microfone.
   - SEND_SMS: opcional; só é pedida se o cuidador ligar "Avisar por SMS".
-  - RECEIVE_SMS: opcional; só é pedida se o cuidador ligar "Receber convites por SMS".
+  - Sem RECEIVE_SMS: a Play Protect bloqueia a instalação fora da loja de apps que a declarem
+    ("enhanced fraud protection"). Os convites FaceTime por SMS ficam desativados (ver README).
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -14,7 +15,6 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
 
     <uses-feature android:name="android.hardware.camera.any" android:required="false" />
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
@@ -42,14 +42,5 @@
             android:theme="@style/ConnectFaceTime.Setup"
             android:windowSoftInputMode="adjustResize" />
 
-        <receiver
-            android:name="pt.familia.connect.facetime.FaceTimeInviteReceiver"
-            android:enabled="false"
-            android:exported="true"
-            android:permission="android.permission.BROADCAST_SMS">
-            <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
-        </receiver>
     </application>
 </manifest>

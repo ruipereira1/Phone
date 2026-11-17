@@ -28,7 +28,6 @@ class FaceTimeSetupActivity : Activity() {
     private lateinit var lookupKey: String
     private lateinit var linkInput: EditText
     private lateinit var notifyBox: CheckBox
-    private lateinit var incomingBox: CheckBox
     private lateinit var ownerInput: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,15 +75,8 @@ class FaceTimeSetupActivity : Activity() {
             setOnCheckedChangeListener { _, checked -> store.autoFillName = checked }
         }
 
-        incomingBox = findViewById(R.id.connect_facetime_setup_incoming)
-        incomingBox.isChecked = FaceTimeInviteReceiver.isEnabled(this)
-        incomingBox.setOnCheckedChangeListener { _, checked ->
-            if (checked && !has(Manifest.permission.RECEIVE_SMS)) {
-                ensurePermission(Manifest.permission.RECEIVE_SMS, REQ_RECEIVE_SMS)
-            } else {
-                FaceTimeInviteReceiver.setEnabled(this, checked)
-            }
-        }
+        // Convites por SMS desativados: RECEIVE_SMS faz a Play Protect bloquear a instalação.
+        findViewById<CheckBox>(R.id.connect_facetime_setup_incoming).visibility = android.view.View.GONE
 
         findViewById<TextView>(R.id.connect_facetime_setup_status).text =
             FaceTimeProvider().capabilities().joinToString("\n\n") { "• ${it.requirement}: ${it.status.label}\n   ${it.note}" }
@@ -118,13 +110,6 @@ class FaceTimeSetupActivity : Activity() {
                 notifyBox.isChecked = false
                 toast(R.string.connect_facetime_setup_sms_denied)
             }
-            REQ_RECEIVE_SMS -> {
-                FaceTimeInviteReceiver.setEnabled(this, granted)
-                if (!granted) {
-                    incomingBox.isChecked = false
-                    toast(R.string.connect_facetime_setup_sms_denied)
-                }
-            }
         }
     }
 
@@ -135,7 +120,6 @@ class FaceTimeSetupActivity : Activity() {
     companion object {
         private const val EXTRA_LOOKUP = "lookup"
         private const val REQ_SEND_SMS = 51
-        private const val REQ_RECEIVE_SMS = 52
 
         fun intent(context: Context, lookupKey: String): Intent =
             Intent(context, FaceTimeSetupActivity::class.java).putExtra(EXTRA_LOOKUP, lookupKey)

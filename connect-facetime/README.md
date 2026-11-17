@@ -10,7 +10,7 @@ Não usa engenharia inversa, não precisa de conta Apple no tablet e não depend
 | Sentido | Fluxo |
 |---|---|
 | Tablet → iPhone | O idoso toca em "Videochamada". O tablet abre o link persistente deste familiar e, se estiver configurado, envia uma SMS: "X está à sua espera…". O familiar abre o FaceTime e aceita a entrada. |
-| iPhone → tablet | O familiar inicia um FaceTime e partilha o link por SMS. Se o remetente estiver nos favoritos, o tablet mostra ATENDER / REJEITAR em ecrã inteiro (opção "Receber convites por SMS"). |
+| iPhone → tablet | **Ainda não suportado.** A deteção de convites por SMS foi retirada: a permissão `RECEIVE_SMS` faz a Play Protect bloquear a instalação do APK. O ecrã ATENDER/REJEITAR já existe e vai ligar-se a outro canal de aviso. |
 
 ## Estado (classificação obrigatória)
 
