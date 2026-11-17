@@ -83,6 +83,11 @@ public final class DrivingState {
         return granted(Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
+    public boolean hasBackgroundLocationPermission() {
+        return android.os.Build.VERSION.SDK_INT < 29
+                || granted(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+    }
+
     private boolean granted(String permission) {
         return ContextCompat.checkSelfPermission(mCarContext, permission) == PackageManager.PERMISSION_GRANTED;
     }

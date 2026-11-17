@@ -250,7 +250,8 @@ public final class AutoPlayer {
             String reason = info != null ? info.getPlayabilityReason() : null;
             mStatus = reason != null && !reason.isEmpty() ? reason : "Vídeo indisponível";
             changed();
-            if (hasNext()) mHandler.postDelayed(this::next, 4_000);
+            // Skip on only if the driver has not picked something else in the meantime.
+            if (hasNext()) mHandler.postDelayed(() -> { if (getVideo() == video) next(); }, 4_000);
             return;
         }
         mStatus = "";

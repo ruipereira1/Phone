@@ -60,14 +60,36 @@ public class AutoSession extends Session {
             missing.add(Manifest.permission.ACCESS_FINE_LOCATION);
             missing.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         }
-        if (missing.isEmpty()) return;
+        if (missing.isEmpty()) {
+            askForBackgroundLocation();
+            return;
+        }
         try {
             getCarContext().requestPermissions(missing, (granted, rejected) -> {
                 mDriving.start();
                 mRenderer.setParkedHint(hintFor(mDriving.getState()));
+                askForBackgroundLocation();
             });
         } catch (Throwable ignored) {
             // Very old hosts: the phone's app settings remain the way to grant them.
+        }
+    }
+
+    /**
+     * With Android Auto on, the phone app is in the background, and from Android 10 a background
+     * app gets no GPS without "Allow all the time". Asked separately, as Android requires, and
+     * only once the plain location permission is there.
+     */
+    private void askForBackgroundLocation() {
+        if (android.os.Build.VERSION.SDK_INT < 29 || !mDriving.hasLocationPermission()
+                || mDriving.hasBackgroundLocationPermission()) {
+            return;
+        }
+        try {
+            getCarContext().requestPermissions(
+                    java.util.Collections.singletonList(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                    (granted, rejected) -> mDriving.start());
+        } catch (Throwable ignored) {
         }
     }
 
