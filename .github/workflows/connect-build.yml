@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write # para publicar o APK de testes na versão "connect-teste"
 
 jobs:
   build:
@@ -47,3 +47,19 @@ jobs:
           name: fossify-connect-foss-debug
           path: app/build/outputs/apk/foss/debug/*.apk
           if-no-files-found: error
+
+      - name: Publicar APK de testes (link direto)
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/connect/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          APK=$(ls app/build/outputs/apk/foss/debug/*.apk | head -1)
+          cp "$APK" fossify-connect-teste.apk
+          NOTES="APK de testes (debug) do Fossify Connect, gerado a partir de ${GITHUB_SHA::8}. Instala-se ao lado da Fossify Phone (applicationId pt.familia.connect.debug). Não é uma versão final."
+          if gh release view connect-teste >/dev/null 2>&1; then
+            gh release upload connect-teste fossify-connect-teste.apk --clobber
+            gh release edit connect-teste --notes "$NOTES" --target "$GITHUB_SHA"
+          else
+            gh release create connect-teste fossify-connect-teste.apk --prerelease --target "$GITHUB_SHA" \
+              --title "Fossify Connect — APK de testes" --notes "$NOTES"
+          fi
