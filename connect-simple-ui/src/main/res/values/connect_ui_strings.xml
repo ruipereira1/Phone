@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Connect · interface simplificada. Língua de origem: português de Portugal. -->
+<resources>
+    <string name="connect_ui_launcher_label">Fossify Connect</string>
+    <string name="connect_ui_home_title">Família</string>
+    <string name="connect_ui_home_phone">Telefone</string>
+    <string name="connect_ui_home_settings">Configuração (manter premido 3 segundos)</string>
+    <string name="connect_ui_home_empty">Ainda não há familiares.\n\nPeça a quem o ajuda para marcar os contactos da família com uma estrela (favoritos).</string>
+    <string name="connect_ui_home_not_default">Toque aqui para este tablet poder fazer e receber chamadas</string>
+    <string name="connect_ui_tile_description">Ligar a %1$s</string>
+
+    <string name="connect_ui_back">← Voltar</string>
+    <string name="connect_ui_call">📞  Chamada</string>
+    <string name="connect_ui_video">🎥  Videochamada</string>
+    <string name="connect_ui_no_number">Sem número de telefone</string>
+    <string name="connect_ui_video_not_configured">Videochamada ainda não configurada</string>
+    <string name="connect_ui_video_failed">Não foi possível iniciar a videochamada.</string>
+
+    <string name="connect_ui_incoming_title">%1$s está a ligar</string>
+    <string name="connect_ui_incoming_text">Videochamada</string>
+    <string name="connect_ui_incoming_accept">ATENDER</string>
+    <string name="connect_ui_incoming_reject">REJEITAR</string>
+    <string name="connect_ui_incoming_channel">Videochamadas recebidas</string>
+
+    <string name="connect_ui_caregiver_title">Configuração do cuidador</string>
+    <string name="connect_ui_caregiver_family">Família</string>
+    <string name="connect_ui_caregiver_edit_favorites">Escolher a família (marcar favoritos nos contactos)</string>
+    <string name="connect_ui_caregiver_no_providers">Nenhum módulo de videochamada instalado.</string>
+    <string name="connect_ui_caregiver_provider_on">✓ %1$s configurado (alterar)</string>
+    <string name="connect_ui_caregiver_provider_off">Configurar %1$s</string>
+    <string name="connect_ui_caregiver_mode">Modo de utilização</string>
+    <string name="connect_ui_caregiver_simple_mode">Abrir sempre no ecrã de fotografias (modo simplificado)</string>
+    <string name="connect_ui_caregiver_launcher">Usar como ecrã principal deste tablet</string>
+    <string name="connect_ui_caregiver_launcher_note">Depois de ligar esta opção, escolha “Fossify Connect” como app inicial. Recomendado só em tablets dedicados.</string>
+    <string name="connect_ui_caregiver_fullscreen_permission">Permitir chamadas em ecrã inteiro (Android 14+)</string>
+    <string name="connect_ui_caregiver_notifications_permission">Permitir notificações de chamadas</string>
+    <string name="connect_ui_caregiver_original">Fossify Phone completa</string>
+    <string name="connect_ui_open_full_phone">Abrir telefone completo (histórico, marcador, definições)</string>
+</resources>

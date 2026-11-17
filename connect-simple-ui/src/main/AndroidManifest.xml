@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Fossify Connect · connect-simple-ui
+  As permissões de contactos e chamadas já são declaradas pela Fossify Phone. Repetem-se aqui
+  para o módulo ser independente, e o merge do manifesto junta os duplicados.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+
+    <application>
+        <provider
+            android:name="pt.familia.connect.ui.SimpleUiInitializer"
+            android:authorities="${applicationId}.connect.ui.init"
+            android:exported="false"
+            android:initOrder="20" />
+
+        <activity
+            android:name="pt.familia.connect.ui.HomeActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:theme="@style/ConnectUi" />
+
+        <!--
+          Ecrã principal do tablet dedicado (Fase 4). Vem DESLIGADO: o cuidador liga-o na
+          configuração. Num telemóvel pessoal nunca aparece sem ser pedido.
+        -->
+        <activity-alias
+            android:name="pt.familia.connect.ui.HomeLauncherAlias"
+            android:enabled="false"
+            android:exported="true"
+            android:label="@string/connect_ui_launcher_label"
+            android:targetActivity="pt.familia.connect.ui.HomeActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity
+            android:name="pt.familia.connect.ui.ContactActivity"
+            android:exported="false"
+            android:theme="@style/ConnectUi" />
+
+        <activity
+            android:name="pt.familia.connect.ui.IncomingCallActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:taskAffinity=".connect.incoming"
+            android:theme="@style/ConnectUi.Incoming" />
+
+        <activity
+            android:name="pt.familia.connect.ui.CaregiverActivity"
+            android:exported="false"
+            android:theme="@style/ConnectUi.Caregiver" />
+    </application>
+</manifest>
