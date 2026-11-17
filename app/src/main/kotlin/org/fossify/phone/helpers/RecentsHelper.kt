@@ -18,7 +18,7 @@ import org.fossify.phone.models.SIMAccount
 
 class RecentsHelper(private val context: Context) {
     companion object {
-        private const val COMPARABLE_PHONE_NUMBER_LENGTH = 9
+        const val COMPARABLE_PHONE_NUMBER_LENGTH = 9
         const val QUERY_LIMIT = 100
     }
 
@@ -124,6 +124,13 @@ class RecentsHelper(private val context: Context) {
         return result
     }
 
+    private fun findContactByNumber(contacts: List<Contact>, number: String): Contact? {
+        val normalizedNumber = number.normalizePhoneNumber() ?: return null
+        return contacts.firstOrNull { contact ->
+            contact.phoneNumbers.any { phoneNumbersMatch(it.normalizedNumber, normalizedNumber) }
+        }
+    }
+
     @SuppressLint("NewApi")
     private fun getRecents(
         contacts: List<Contact>,
@@ -195,26 +202,15 @@ class RecentsHelper(private val context: Context) {
                     name = number.orEmpty()
                 }
 
-                if (name == number && !isUnknownNumber) {
-                    if (contactsNumbersMap.containsKey(number)) {
-                        name = contactsNumbersMap[number]!!
-                    } else {
-                        val normalizedNumber = number.normalizePhoneNumber()
-                        if (normalizedNumber!!.length >= COMPARABLE_PHONE_NUMBER_LENGTH) {
-                            name = contacts.filter { it.phoneNumbers.isNotEmpty() }.firstOrNull { contact ->
-                                val curNumber = contact.phoneNumbers.first().normalizedNumber
-                                if (curNumber.length >= COMPARABLE_PHONE_NUMBER_LENGTH) {
-                                    if (curNumber.substring(curNumber.length - COMPARABLE_PHONE_NUMBER_LENGTH) == normalizedNumber.substring(
-                                            normalizedNumber.length - COMPARABLE_PHONE_NUMBER_LENGTH
-                                        )
-                                    ) {
-                                        contactsNumbersMap[number] = contact.getNameToDisplay()
-                                        return@firstOrNull true
-                                    }
-                                }
-                                false
-                            }?.name ?: number
-                        }
+                if (!isUnknownNumber) {
+                    // Prefer the contact as this app displays it (honours "Start name with surname"
+                    // and every number of the contact) over the name cached by the system call log.
+                    // An empty value caches "no matching contact" for this number.
+                    val contactName = contactsNumbersMap.getOrPut(number!!) {
+                        findContactByNumber(contacts, number)?.getNameToDisplay().orEmpty()
+                    }
+                    if (contactName.isNotEmpty()) {
+                        name = contactName
                     }
                 }
 
@@ -329,4 +325,20 @@ class RecentsHelper(private val context: Context) {
             }
         }
     }
+}
+
+/**
+ * Two normalized phone numbers belong to the same line when their last
+ * [RecentsHelper.COMPARABLE_PHONE_NUMBER_LENGTH] digits match, so "+351 912 345 678" and
+ * "912345678" are the same number. Too short numbers never match.
+ */
+fun phoneNumbersMatch(
+    first: String,
+    second: String,
+    comparableLength: Int = RecentsHelper.COMPARABLE_PHONE_NUMBER_LENGTH
+): Boolean {
+    if (first.length < comparableLength || second.length < comparableLength) {
+        return false
+    }
+    return first.takeLast(comparableLength) == second.takeLast(comparableLength)
 }

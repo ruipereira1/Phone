@@ -90,6 +90,7 @@ android {
 
     sourceSets {
         getByName("main").java.directories.add("src/main/kotlin")
+        getByName("test").java.directories.add("src/test/kotlin")
     }
 
     compileOptions {
@@ -152,4 +153,5 @@ dependencies {
     implementation(project(":connect-facetime"))
     implementation(project(":connect-matrix"))
     detektPlugins(libs.compose.detekt)
+    testImplementation(libs.junit)
 }

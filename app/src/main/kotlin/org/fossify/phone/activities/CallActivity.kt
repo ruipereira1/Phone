@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.RippleDrawable
-import android.media.AudioManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -42,6 +41,8 @@ import kotlin.math.min
 
 class CallActivity : SimpleActivity() {
     companion object {
+        private const val AUDIO_ROUTE_RESYNC_DELAY_MS = 2000L
+
         fun getStartIntent(context: Context): Intent {
             val openAppIntent = Intent(context, CallActivity::class.java)
             openAppIntent.flags = Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
@@ -55,7 +56,6 @@ class CallActivity : SimpleActivity() {
     private var isMicrophoneOff = false
     private var isCallEnded = false
     private var callContact: CallContact? = null
-    private var proximityWakeLock: PowerManager.WakeLock? = null
     private var screenOnWakeLock: PowerManager.WakeLock? = null
     private var callDuration = 0
     private val callDurationHandler = Handler(Looper.getMainLooper())
@@ -82,10 +82,12 @@ class CallActivity : SimpleActivity() {
 
         updateTextColors(binding.callHolder)
         initButtons()
-        audioManager.mode = AudioManager.MODE_IN_CALL
+        // Do not force AudioManager.MODE_IN_CALL — Telecom/InCallService owns call audio.
+        // Forcing MODE_IN_CALL breaks Bluetooth HFP / Android Auto routing (call connects, no sound).
         addLockScreenFlags()
         CallManager.addListener(callCallback)
         updateCallContactInfo(CallManager.getPrimaryCall())
+        CallManager.preferBluetoothRouteIfAvailable()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -101,7 +103,8 @@ class CallActivity : SimpleActivity() {
     override fun onDestroy() {
         super.onDestroy()
         CallManager.removeListener(callCallback)
-        disableProximitySensor()
+        callDurationHandler.removeCallbacks(resyncAudioRouteTask)
+        // proximity is owned by the call (ProximitySensorHelper), not by this screen
 
         if (screenOnWakeLock?.isHeld == true) {
             screenOnWakeLock!!.release()
@@ -437,9 +440,26 @@ class CallActivity : SimpleActivity() {
         if (supportAudioRoutes.contains(AudioRoute.BLUETOOTH)) {
             createOrUpdateAudioRouteChooser(supportAudioRoutes)
         } else {
-            val isSpeakerOn = !isSpeakerOn
-            val newRoute = if (isSpeakerOn) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_WIRED_OR_EARPIECE
+            val turnSpeakerOn = !isSpeakerOn
+            val newRoute = if (turnSpeakerOn) CallAudioState.ROUTE_SPEAKER else CallAudioState.ROUTE_WIRED_OR_EARPIECE
             CallManager.setAudioRoute(newRoute)
+
+            // Telecom can take a second or two to confirm the new route. Reflect the tap right away
+            // so the button doesn't look ignored; the real state arrives via onAudioStateChanged,
+            // and we re-sync once more in case Telecom refused the change without a callback.
+            isSpeakerOn = turnSpeakerOn
+            binding.callToggleSpeaker.setImageResource(
+                if (turnSpeakerOn) AudioRoute.SPEAKER.iconRes else AudioRoute.EARPIECE.iconRes
+            )
+            toggleButtonColor(binding.callToggleSpeaker, enabled = turnSpeakerOn)
+            callDurationHandler.removeCallbacks(resyncAudioRouteTask)
+            callDurationHandler.postDelayed(resyncAudioRouteTask, AUDIO_ROUTE_RESYNC_DELAY_MS)
+        }
+    }
+
+    private val resyncAudioRouteTask = Runnable {
+        if (!isCallEnded) {
+            updateCallAudioState(CallManager.getCallAudioRoute())
         }
     }
 
@@ -468,7 +488,9 @@ class CallActivity : SimpleActivity() {
 
     private fun updateCallAudioState(route: AudioRoute?) {
         if (route != null) {
-            isMicrophoneOff = audioManager.isMicrophoneMute
+            // Telecom is the source of truth for call mute; AudioManager's flag can disagree
+            // (or be reset by the OS), which made the button show "unmuted" while muted and vice versa.
+            isMicrophoneOff = CallManager.inCallService?.callAudioState?.isMuted ?: isMicrophoneOff
             updateMicrophoneButton()
 
             isSpeakerOn = route == AudioRoute.SPEAKER
@@ -490,17 +512,14 @@ class CallActivity : SimpleActivity() {
             toggleButtonColor(binding.callToggleSpeaker, enabled = route != AudioRoute.EARPIECE && route != AudioRoute.WIRED_HEADSET)
             createOrUpdateAudioRouteChooser(supportedAudioRoutes, create = false)
 
-            if (isSpeakerOn) {
-                disableProximitySensor()
-            } else {
-                enableProximitySensor()
-            }
+            ProximitySensorHelper.update(this)
         }
     }
 
     private fun toggleMicrophone() {
         isMicrophoneOff = !isMicrophoneOff
-        audioManager.isMicrophoneMute = isMicrophoneOff
+        // Mute via Telecom only. Also toggling AudioManager.isMicrophoneMute fights InCallService:
+        // the two states drift apart and the call can end up unmuted without the user asking.
         CallManager.inCallService?.setMuted(isMicrophoneOff)
         updateMicrophoneButton()
     }
@@ -730,7 +749,7 @@ class CallActivity : SimpleActivity() {
     }
 
     private fun initOutgoingCallUI() {
-        enableProximitySensor()
+        ProximitySensorHelper.update(this)
         binding.incomingCallHolder.beGone()
         binding.ongoingCallHolder.beVisible()
         binding.callEnd.beVisible()
@@ -741,12 +760,13 @@ class CallActivity : SimpleActivity() {
     }
 
     private fun callStarted() {
-        enableProximitySensor()
+        ProximitySensorHelper.update(this)
         binding.incomingCallHolder.beGone()
         binding.ongoingCallHolder.beVisible()
         binding.callEnd.beVisible()
         callDurationHandler.removeCallbacks(updateCallDurationTask)
         callDurationHandler.post(updateCallDurationTask)
+        CallManager.preferBluetoothRouteIfAvailable()
     }
 
     private fun showPhoneAccountPicker() {
@@ -759,17 +779,12 @@ class CallActivity : SimpleActivity() {
 
     private fun endCall() {
         CallManager.reject()
-        disableProximitySensor()
+        ProximitySensorHelper.release()
         audioRouteChooserDialog?.dismissAllowingStateLoss()
 
         if (isCallEnded) {
             safeFinishAndRemoveTask()
             return
-        }
-
-        try {
-            audioManager.mode = AudioManager.MODE_NORMAL
-        } catch (ignored: Exception) {
         }
 
         isCallEnded = true
@@ -784,7 +799,9 @@ class CallActivity : SimpleActivity() {
             } else {
                 disableAllActionButtons()
                 binding.callStatusLabel.text = getString(R.string.call_ended)
-                finish()
+                // rejected / missed / not connected: also drop the call task, so the user lands back
+                // in the app they were using instead of the Phone main screen
+                safeFinishAndRemoveTask()
             }
         }
     }
@@ -852,20 +869,6 @@ class CallActivity : SimpleActivity() {
             screenOnWakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK, "org.fossify.phone:full_wake_lock")
             screenOnWakeLock!!.acquire(5 * 1000L)
         } catch (e: Exception) {
-        }
-    }
-
-    private fun enableProximitySensor() {
-        if (!config.disableProximitySensor && (proximityWakeLock == null || proximityWakeLock?.isHeld == false)) {
-            val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-            proximityWakeLock = powerManager.newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "org.fossify.phone:wake_lock")
-            proximityWakeLock!!.acquire(60 * MINUTE_SECONDS * 1000L)
-        }
-    }
-
-    private fun disableProximitySensor() {
-        if (proximityWakeLock?.isHeld == true) {
-            proximityWakeLock!!.release()
         }
     }
 

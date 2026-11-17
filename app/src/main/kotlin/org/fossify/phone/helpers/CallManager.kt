@@ -20,6 +20,8 @@ class CallManager {
         private var call: Call? = null
         private val calls = mutableListOf<Call>()
         private val listeners = CopyOnWriteArraySet<CallManagerListener>()
+        // One-shot per call session so we don't fight the user if they leave Bluetooth later.
+        private var bluetoothPreferredThisSession = false
 
         fun onCallAdded(call: Call) {
             this.call = call
@@ -44,6 +46,9 @@ class CallManager {
 
         fun onCallRemoved(call: Call) {
             calls.remove(call)
+            if (calls.isEmpty()) {
+                bluetoothPreferredThisSession = false
+            }
             updateState()
         }
 
@@ -115,6 +120,32 @@ class CallManager {
             inCallService?.setAudioRoute(newRoute)
         }
 
+        /**
+         * When a Bluetooth headset / car (Android Auto HFP) is available, prefer that route once.
+         * Telecom owns call audio; forcing earpiece while BT is connected often yields silence in the car.
+         * Returns false if already preferred this session, BT unsupported yet, or already on BT/speaker.
+         */
+        fun preferBluetoothRouteIfAvailable(): Boolean {
+            if (bluetoothPreferredThisSession) {
+                return false
+            }
+            val state = getState() ?: return false
+            val audioState = getCallAudioState() ?: return false
+            return when (bluetoothRouteDecision(state, audioState.supportedRouteMask, audioState.route)) {
+                BluetoothRouteDecision.WAIT -> false
+                BluetoothRouteDecision.KEEP_CURRENT -> {
+                    bluetoothPreferredThisSession = true
+                    false
+                }
+
+                BluetoothRouteDecision.SWITCH_TO_BLUETOOTH -> {
+                    setAudioRoute(CallAudioState.ROUTE_BLUETOOTH)
+                    bluetoothPreferredThisSession = true
+                    true
+                }
+            }
+        }
+
         private fun updateState() {
             val primaryCall = when (val phoneState = getPhoneState()) {
                 is NoCall -> null
@@ -144,6 +175,8 @@ class CallManager {
         fun getPrimaryCall(): Call? {
             return call
         }
+
+        fun getCallStates(): List<Int> = calls.map { it.getStateCompat() }
 
         fun getConferenceCalls(): List<Call> {
             return calls.find { it.isConference() }?.children ?: emptyList()
