@@ -57,6 +57,15 @@ public final class AutoPlayer {
 
     private boolean mVideoAllowed;
     private boolean mAudioOnlyByUser;
+    /** What applyVideoTrack last asked of the player: picture on or off. */
+    private boolean mVideoTrackOn = true;
+    /** A frame reached the surface since the picture was last switched back on. */
+    private boolean mFrameSinceVideoOn;
+    /** One reopen per "picture back on", so a video without a picture cannot loop. */
+    private boolean mVideoReopened;
+    /** Position to seek to once the current open is ready (a reopen to bring the picture back). */
+    private long mResumeAtMs = -1;
+    private static final long VIDEO_BACK_CHECK_MS = 4_000;
     private String mStatus = "";
 
     private AutoPlayer(Context context) {
@@ -73,6 +82,7 @@ public final class AutoPlayer {
     // ------------------------------------------------------------------ queue
 
     public void play(List<Video> videos, int index) {
+        mResumeAtMs = -1;
         mQueue.clear();
         for (Video video : videos) {
             if (video != null && video.videoId != null) {
@@ -96,6 +106,7 @@ public final class AutoPlayer {
     }
 
     public void next() {
+        mResumeAtMs = -1;
         if (hasNext()) {
             mIndex++;
             load(mQueue.get(mIndex));
@@ -107,6 +118,7 @@ public final class AutoPlayer {
             mPlayer.seekTo(0);
             return;
         }
+        mResumeAtMs = -1;
         if (hasPrevious()) {
             mIndex--;
             load(mQueue.get(mIndex));
@@ -181,10 +193,42 @@ public final class AutoPlayer {
     }
 
     private void applyVideoTrack() {
-        if (mController != null) {
-            mController.setVideoTrackDisabled(!(mVideoAllowed && !mAudioOnlyByUser));
+        if (mController == null) return;
+        boolean on = mVideoAllowed && !mAudioOnlyByUser;
+        mController.setVideoTrackDisabled(!on);
+        if (on && !mVideoTrackOn) {
+            // Parked again. Some streams (SABR above all) do not bring the picture back when the
+            // video track is re-enabled mid-play; if no frame arrives, reopen at the same second.
+            android.util.Log.i("NewTubeAuto", "video on: waiting for a frame");
+            mFrameSinceVideoOn = false;
+            mVideoReopened = false;
+            mHandler.removeCallbacks(mVideoBackCheck);
+            mHandler.postDelayed(mVideoBackCheck, VIDEO_BACK_CHECK_MS);
+        } else if (!on && mVideoTrackOn) {
+            android.util.Log.i("NewTubeAuto", "video off: sound only");
+            mHandler.removeCallbacks(mVideoBackCheck);
         }
+        mVideoTrackOn = on;
     }
+
+    private final Runnable mVideoBackCheck = new Runnable() {
+        @Override
+        public void run() {
+            if (!shouldShowVideo() || mPlayer == null || mFrameSinceVideoOn || mVideoReopened) {
+                android.util.Log.i("NewTubeAuto", "video check: frame=" + mFrameSinceVideoOn
+                        + " show=" + shouldShowVideo());
+                return;
+            }
+            Video video = getVideo();
+            if (video == null) return;
+            mVideoReopened = true;
+            mResumeAtMs = Math.max(0, mPlayer.getCurrentPosition());
+            android.util.Log.i("NewTubeAuto", "video check: no frame, reopening at " + mResumeAtMs + " ms");
+            boolean playing = mPlayer.getPlayWhenReady();
+            load(video);
+            mPlayer.setPlayWhenReady(playing);
+        }
+    };
 
     // ------------------------------------------------------------------ listeners
 
@@ -221,6 +265,22 @@ public final class AutoPlayer {
             @Override
             public void onEvents(Player player, Player.Events events) {
                 changed();
+            }
+
+            @Override
+            public void onRenderedFirstFrame() {
+                if (!mFrameSinceVideoOn) android.util.Log.i("NewTubeAuto", "video frame on screen");
+                mFrameSinceVideoOn = true;
+            }
+
+            @Override
+            public void onPlaybackStateChanged(int state) {
+                // A reopen to bring the picture back: return to the same second once ready.
+                if (state == Player.STATE_READY && mResumeAtMs > 0 && mPlayer != null) {
+                    long at = mResumeAtMs;
+                    mResumeAtMs = -1;
+                    if (Math.abs(mPlayer.getCurrentPosition() - at) > 2_000) mPlayer.seekTo(at);
+                }
             }
         });
         ensureSession();
