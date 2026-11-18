@@ -316,25 +316,38 @@ public final class AutoPlayer {
         }
         mStatus = "";
         video.isLive = info.isLive();
+        String route;
         if (info.isLive() && info.containsDashUrl()) {
+            route = "live-dash";
             mController.openDashUrl(info.getDashManifestUrl());
         } else if (info.isLive() && info.containsHlsUrl()) {
+            route = "live-hls";
             mController.openHlsUrl(info.getHlsManifestUrl());
         } else if (info.containsDashFormats()) {
+            route = "dash";
             mController.openDash(info);
         } else if (info.containsSabrFormats()) {
+            route = "sabr";
             mController.openSabr(info);
         } else if (info.isHlsVodSelected()) {
+            route = "hls-vod";
             mController.openHlsVod(info);
         } else if (info.containsUrlFormats()) {
+            route = "progressive";
             mController.openProgressive(info);
         } else if (info.containsHlsUrl()) {
+            route = "hls";
             mController.openHlsUrl(info.getHlsManifestUrl());
         } else if (info.containsDashUrl()) {
+            route = "dash-url";
             mController.openDashUrl(info.getDashManifestUrl());
         } else {
+            route = "none";
             mStatus = "Formato não suportado";
         }
+        android.util.Log.i("NewTubeAuto", "open " + video.videoId + " route=" + route
+                + " video=" + (mVideoAllowed && !mAudioOnlyByUser ? "on" : "off")
+                + (mResumeAtMs > 0 ? " resumeAt=" + mResumeAtMs : ""));
         mPlayer.setPlayWhenReady(true);
         applyVideoTrack();
         changed();
