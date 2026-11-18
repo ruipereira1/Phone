@@ -516,8 +516,57 @@ public final class AutoPlayer {
 
     // ------------------------------------------------------------------ teardown
 
+    // ------------------------------------------------------------------ continue after reconnecting
+
+    private static final String PREFS = "newtube_auto";
+
+    /** What was playing when the car last disconnected, or null. */
+    @Nullable
+    public Video getLastSession() {
+        android.content.SharedPreferences prefs = mContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        String id = prefs.getString("videoId", null);
+        if (id == null) return null;
+        Video video = Video.from(id);
+        video.title = prefs.getString("title", "");
+        video.author = prefs.getString("author", null);
+        video.cardImageUrl = prefs.getString("card", null);
+        return video;
+    }
+
+    /** Plays the last session's video from where it stopped. */
+    public void resumeLastSession() {
+        Video video = getLastSession();
+        if (video == null) return;
+        long position = mContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getLong("position", 0);
+        java.util.List<Video> one = new ArrayList<>();
+        one.add(video);
+        play(one, 0);
+        mResumeAtMs = position > 5_000 ? position : -1;
+        android.util.Log.i("NewTubeAuto", "continue " + video.videoId + " at " + position + " ms");
+    }
+
+    private void saveSession() {
+        Video video = getVideo();
+        if (video == null || mPlayer == null || video.isLive) return;
+        long position = Math.max(0, mPlayer.getCurrentPosition());
+        long duration = mPlayer.getDuration();
+        android.content.SharedPreferences.Editor editor =
+                mContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit();
+        if (duration > 0 && position > duration - 30_000) {
+            editor.clear(); // finished: nothing to continue
+        } else {
+            editor.putString("videoId", video.videoId)
+                    .putString("title", video.title != null ? video.title : "")
+                    .putString("author", video.getAuthor())
+                    .putString("card", video.getCardImageUrl())
+                    .putLong("position", position);
+        }
+        editor.apply();
+    }
+
     /** The car disconnected: stop the sound and free the player. */
     public void release() {
+        saveSession();
         mHandler.removeCallbacksAndMessages(null);
         if (mLoad != null) mLoad.dispose();
         mLoad = null;
