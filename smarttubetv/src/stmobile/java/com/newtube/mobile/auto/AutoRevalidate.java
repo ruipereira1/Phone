@@ -39,12 +39,12 @@ public final class AutoRevalidate {
         for (long delay : DELAYS_MS) {
             handler.postDelayed(() -> nudge(app), delay);
         }
-        Log.i(TAG, "car connected: asking Android Auto to re-check in " + DELAYS_MS[0] / 1000 + " s");
+        AutoLog.i("car connected: asking Android Auto to re-check in " + DELAYS_MS[0] / 1000 + " s");
     }
 
     private static void nudge(Context context) {
         if (AutoSession.isActive()) {
-            Log.i(TAG, "re-check skipped: the car screen is already open");
+            AutoLog.i("re-check skipped: the car screen is already open");
             return;
         }
         try {
@@ -54,9 +54,9 @@ public final class AutoRevalidate {
                     PackageManager.DONT_KILL_APP);
             pm.setComponentEnabledSetting(dummy, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                     PackageManager.DONT_KILL_APP);
-            Log.i(TAG, "asked Android Auto to re-check NewTube (package changed)");
+            AutoLog.i("asked Android Auto to re-check NewTube (package changed)");
         } catch (Throwable error) {
-            Log.w(TAG, "re-check failed: " + error);
+            AutoLog.w("re-check failed: " + error);
         }
     }
 

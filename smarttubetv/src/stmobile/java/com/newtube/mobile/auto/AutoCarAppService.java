@@ -28,6 +28,8 @@ public class AutoCarAppService extends CarAppService {
         if (sInitialized) return;
         sInitialized = true;
         android.content.Context app = context.getApplicationContext();
+        AutoLog.init(app);
+        AutoLog.i("process started by Android Auto");
         com.liskovsoft.sharedutils.rx.RxHelper.setupGlobalErrorHandler();
         com.liskovsoft.sharedutils.prefs.GlobalPreferences.instance(app);
         try {

@@ -124,7 +124,7 @@ public final class DrivingState {
             if (lm != null) lm.removeUpdates(mLocationListener);
             mLocationListener = null;
             mGpsSpeed = -1;
-            android.util.Log.i("NewTubeAuto", "gps off: the car reports its speed");
+            AutoLog.i("gps off: the car reports its speed");
         }
     }
 
@@ -148,10 +148,10 @@ public final class DrivingState {
                 }
             };
             carInfo().addSpeedListener(mMainExecutor, mSpeedListener);
-            android.util.Log.i("NewTubeAuto", "car speed listener on");
+            AutoLog.i("car speed listener on");
         } catch (Throwable error) {
             // Older Android Auto hosts or cars without the speed property: GPS covers it.
-            android.util.Log.w("NewTubeAuto", "car speed unavailable: " + error);
+            AutoLog.w("car speed unavailable: " + error);
             mSpeedListener = null;
         }
     }
@@ -220,7 +220,7 @@ public final class DrivingState {
             mSlowSince = -1;
         }
         if (next != mState) {
-            android.util.Log.i("NewTubeAuto", "driving " + mState + " -> " + next
+            AutoLog.i("driving " + mState + " -> " + next
                     + " car=" + (carLive ? mCarSpeed : "-") + " gps=" + (gpsLive ? mGpsSpeed : "-"));
             mState = next;
             mListener.onDrivingStateChanged(next);

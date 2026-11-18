@@ -199,13 +199,13 @@ public final class AutoPlayer {
         if (on && !mVideoTrackOn) {
             // Parked again. Some streams (SABR above all) do not bring the picture back when the
             // video track is re-enabled mid-play; if no frame arrives, reopen at the same second.
-            android.util.Log.i("NewTubeAuto", "video on: waiting for a frame");
+            AutoLog.i("video on: waiting for a frame");
             mFrameSinceVideoOn = false;
             mVideoReopened = false;
             mHandler.removeCallbacks(mVideoBackCheck);
             mHandler.postDelayed(mVideoBackCheck, VIDEO_BACK_CHECK_MS);
         } else if (!on && mVideoTrackOn) {
-            android.util.Log.i("NewTubeAuto", "video off: sound only");
+            AutoLog.i("video off: sound only");
             mHandler.removeCallbacks(mVideoBackCheck);
         }
         mVideoTrackOn = on;
@@ -215,7 +215,7 @@ public final class AutoPlayer {
         @Override
         public void run() {
             if (!shouldShowVideo() || mPlayer == null || mFrameSinceVideoOn || mVideoReopened) {
-                android.util.Log.i("NewTubeAuto", "video check: frame=" + mFrameSinceVideoOn
+                AutoLog.i("video check: frame=" + mFrameSinceVideoOn
                         + " show=" + shouldShowVideo());
                 return;
             }
@@ -223,7 +223,7 @@ public final class AutoPlayer {
             if (video == null) return;
             mVideoReopened = true;
             mResumeAtMs = Math.max(0, mPlayer.getCurrentPosition());
-            android.util.Log.i("NewTubeAuto", "video check: no frame, reopening at " + mResumeAtMs + " ms");
+            AutoLog.i("video check: no frame, reopening at " + mResumeAtMs + " ms");
             boolean playing = mPlayer.getPlayWhenReady();
             load(video);
             mPlayer.setPlayWhenReady(playing);
@@ -269,7 +269,7 @@ public final class AutoPlayer {
 
             @Override
             public void onRenderedFirstFrame() {
-                if (!mFrameSinceVideoOn) android.util.Log.i("NewTubeAuto", "video frame on screen");
+                if (!mFrameSinceVideoOn) AutoLog.i("video frame on screen");
                 mFrameSinceVideoOn = true;
             }
 
@@ -345,7 +345,7 @@ public final class AutoPlayer {
             route = "none";
             mStatus = "Formato não suportado";
         }
-        android.util.Log.i("NewTubeAuto", "open " + video.videoId + " route=" + route
+        AutoLog.i("open " + video.videoId + " route=" + route
                 + " video=" + (mVideoAllowed && !mAudioOnlyByUser ? "on" : "off")
                 + (mResumeAtMs > 0 ? " resumeAt=" + mResumeAtMs : ""));
         mPlayer.setPlayWhenReady(true);
@@ -542,7 +542,7 @@ public final class AutoPlayer {
         one.add(video);
         play(one, 0);
         mResumeAtMs = position > 5_000 ? position : -1;
-        android.util.Log.i("NewTubeAuto", "continue " + video.videoId + " at " + position + " ms");
+        AutoLog.i("continue " + video.videoId + " at " + position + " ms");
     }
 
     private void saveSession() {
