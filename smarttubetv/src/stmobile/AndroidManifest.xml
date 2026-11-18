@@ -324,6 +324,12 @@
                 <category android:name="androidx.car.app.category.NAVIGATION" />
             </intent-filter>
         </service>
+        <!-- NEWTUBE-AUTO: never receives anything; flipping it on and off makes Android Auto re-check
+             the app after a car connection (see AutoRevalidate). -->
+        <receiver
+            android:name="com.newtube.mobile.auto.AutoRevalidate$Marker"
+            android:enabled="false"
+            android:exported="false" />
         <!-- NEWTUBE-AUTO: the same feeds in the car's music screen (sound only). -->
         <service
             android:name="com.newtube.mobile.auto.AutoMediaBrowserService"

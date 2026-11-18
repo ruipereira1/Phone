@@ -37,6 +37,9 @@ public class AutoMediaBrowserService extends MediaBrowserServiceCompat {
     @Nullable
     @Override
     public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
+        if (clientPackageName.startsWith("com.google.android.projection.gearhead")) {
+            AutoRevalidate.onCarConnected(this);
+        }
         Bundle extras = new Bundle();
         extras.putBoolean("android.media.browse.SEARCH_SUPPORTED", true);
         return new BrowserRoot(ROOT, extras);
