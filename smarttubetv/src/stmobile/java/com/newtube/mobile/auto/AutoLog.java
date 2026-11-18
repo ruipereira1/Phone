@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * NEWTUBE-AUTO: the car log. Logcat drops this app's lines first (the player is chatty), so every
+ * NEWTUBE(android-auto): the car log. Logcat drops this app's lines first (the player is chatty), so every
  * NewTubeAuto line also goes to Android/data/<package>/files/newtube-auto.log (readable with adb,
  * capped at ~512 KB, the older half kept on rollover).
  */

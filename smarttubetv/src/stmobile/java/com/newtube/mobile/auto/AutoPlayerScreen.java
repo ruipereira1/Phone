@@ -17,7 +17,7 @@ import androidx.lifecycle.LifecycleOwner;
 import com.liskovsoft.smartyoutubetv2.tv.R;
 
 /**
- * NEWTUBE-AUTO: the playing screen. A navigation template, so the car hands over its surface:
+ * NEWTUBE(android-auto): the playing screen. A navigation template, so the car hands over its surface:
  * {@link AutoSurfaceRenderer} draws the video there (parked) or the cover and title (driving).
  */
 public class AutoPlayerScreen extends Screen implements AutoPlayer.Listener {

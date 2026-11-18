@@ -29,7 +29,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
- * NEWTUBE-AUTO: the player behind the Android Auto screens. It owns its own media3 player, built
+ * NEWTUBE(android-auto): the player behind the Android Auto screens. It owns its own media3 player, built
  * by the same {@link Media3PlayerInitializer} / {@link Media3PlayerController} as the phone player,
  * so the car gets the phone's network stack (Cronet, SABR, DASH, live) without the phone's activity.
  *

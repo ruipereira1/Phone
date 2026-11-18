@@ -13,7 +13,7 @@ import androidx.lifecycle.LifecycleOwner;
 import java.util.ArrayList;
 import java.util.List;
 
-/** NEWTUBE-AUTO: one Android Auto connection - surface, parked/moving gate and the screens. */
+/** NEWTUBE(android-auto): one Android Auto connection - surface, parked/moving gate and the screens. */
 public class AutoSession extends Session {
     private static int sActive;
 

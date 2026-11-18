@@ -4,14 +4,14 @@ name: NewTube Auto
 # "newtube-auto" release of this repository.
 on:
   push:
-    branches: [ "newtube-auto" ]
+    branches: [ "android-auto-ci" ]
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: newtube-auto
+  group: android-auto-ci
   cancel-in-progress: true
 
 jobs:
@@ -67,7 +67,7 @@ jobs:
         run: |
           set -euo pipefail
           chmod +x gradlew
-          ./gradlew --no-daemon --stacktrace :smarttubetv:assembleStmobileRelease -PautoBuild
+          ./gradlew --no-daemon --stacktrace :smarttubetv:assembleStmobileRelease
           mkdir dist
           ls -R smarttubetv/build/outputs/apk | head -50
           cp "$(ls smarttubetv/build/outputs/apk/stmobile/release/*universal*.apk | head -1)" dist/NewTube-Auto.apk
@@ -82,15 +82,3 @@ jobs:
           name: NewTube-Auto
           path: dist/*.apk
 
-      - name: Publish on the newtube-auto release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          notes="NewTube com Android Auto (build ${{ github.run_number }}, commit ${GITHUB_SHA::7}). Instala NewTube-Auto.apk."
-          if gh release view newtube-auto >/dev/null 2>&1; then
-            gh release upload newtube-auto dist/*.apk --clobber
-            gh release edit newtube-auto --notes "$notes" --prerelease
-          else
-            gh release create newtube-auto dist/*.apk --target "$GITHUB_SHA" --title "NewTube Auto" --notes "$notes" --prerelease
-          fi

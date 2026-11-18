@@ -24,7 +24,7 @@ import androidx.core.content.ContextCompat;
 import java.util.concurrent.Executor;
 
 /**
- * NEWTUBE-AUTO: tells "parked" from "moving" for the video gate. Two sources, either is enough:
+ * NEWTUBE(android-auto): tells "parked" from "moving" for the video gate. Two sources, either is enough:
  * the car's own speed (Android Auto, permission CAR_SPEED) and the phone's GPS speed (location
  * permission). With no source reporting, the state is UNKNOWN and the car gets sound only.
  *

@@ -35,7 +35,7 @@
          reused ExoPlayer alive + posts the media notification when the app is backgrounded / screen
          off. FOREGROUND_SERVICE (API 28+) and FOREGROUND_SERVICE_MEDIA_PLAYBACK (API 34+) are both
          normal, auto-granted permissions. POST_NOTIFICATIONS is already declared in the main manifest. -->
-    <!-- NEWTUBE-AUTO: Android Auto. The navigation templates give the app a drawing surface on the
+    <!-- NEWTUBE(android-auto): Android Auto. The navigation templates give the app a drawing surface on the
          car screen (video, parked only); speed and location only tell parked from moving. -->
     <uses-permission android:name="androidx.car.app.NAVIGATION_TEMPLATES" />
     <uses-permission android:name="androidx.car.app.ACCESS_SURFACE" />
@@ -315,7 +315,7 @@
             android:screenOrientation="unspecified"
             android:theme="@style/Theme.NewTube" />
 
-        <!-- NEWTUBE-AUTO: Android Auto entry point (navigation category = surface for video). -->
+        <!-- NEWTUBE(android-auto): Android Auto entry point (navigation category = surface for video). -->
         <service
             android:name="com.newtube.mobile.auto.AutoCarAppService"
             android:exported="true">
@@ -324,7 +324,7 @@
                 <category android:name="androidx.car.app.category.NAVIGATION" />
             </intent-filter>
         </service>
-        <!-- NEWTUBE-AUTO: the same feeds in the car's music screen (sound only). -->
+        <!-- NEWTUBE(android-auto): the same feeds in the car's music screen (sound only). -->
         <service
             android:name="com.newtube.mobile.auto.AutoMediaBrowserService"
             android:exported="true">

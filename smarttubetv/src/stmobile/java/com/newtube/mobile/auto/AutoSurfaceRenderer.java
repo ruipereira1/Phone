@@ -37,7 +37,7 @@ import com.bumptech.glide.Glide;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 
 /**
- * NEWTUBE-AUTO: draws on the surface Android Auto gives a navigation app. A private virtual display
+ * NEWTUBE(android-auto): draws on the surface Android Auto gives a navigation app. A private virtual display
  * wraps that surface and a {@link Presentation} on it hosts a {@link PlayerView} (fit, black bars)
  * under a NewTube-styled overlay: title and channel on top, a red progress bar with times below.
  * Parked, the overlay fades after a few seconds and a tap on the screen brings it back; driving,

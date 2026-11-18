@@ -7,7 +7,7 @@ import androidx.car.app.model.Action;
 import androidx.car.app.model.SearchTemplate;
 import androidx.car.app.model.Template;
 
-/** NEWTUBE-AUTO: search box (the car's keyboard or voice); results open as a feed. */
+/** NEWTUBE(android-auto): search box (the car's keyboard or voice); results open as a feed. */
 public class AutoSearchScreen extends Screen {
     private final AutoSession mSession;
 

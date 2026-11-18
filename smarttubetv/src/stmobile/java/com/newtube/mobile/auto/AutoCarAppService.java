@@ -6,8 +6,8 @@ import androidx.car.app.Session;
 import androidx.car.app.validation.HostValidator;
 
 /**
- * NEWTUBE-AUTO: Android Auto entry point. Sideloaded builds are only shown by Android Auto with
- * "Unknown sources" on in its developer settings, so any host is accepted.
+ * NEWTUBE(android-auto): Android Auto entry point. Any host is accepted: Android Auto itself decides
+ * whether to list the app (see scripts/android-auto for installs it accepts outside Google Play).
  */
 public class AutoCarAppService extends CarAppService {
     private static boolean sInitialized;

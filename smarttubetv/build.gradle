@@ -171,9 +171,7 @@ android {
         buildConfigField "boolean", "BENCHMARK", "false"
         // NEWTUBE(fdroid): -Pfdroid turns the in-app updater off - F-Droid delivers the updates, and
         // its inclusion policy forbids self-updates that aren't an explicit opt-in.
-        // NEWTUBE-AUTO: the Android Auto fork has its own id and signature; the official updater
-        // would offer an APK that cannot install over it.
-        buildConfigField "boolean", "IN_APP_UPDATES", (project.hasProperty('fdroid') || project.hasProperty('autoBuild')) ? "false" : "true"
+        buildConfigField "boolean", "IN_APP_UPDATES", project.hasProperty('fdroid') ? "false" : "true"
 
         // The content of Universal apk
         ndk {
@@ -318,11 +316,6 @@ android {
             // 1.0.0 -> 10000, 1.0.1 -> 10001, 1.1.0 -> 10100, 2.0.0 -> 20000.
             versionCode 11701
             versionName "1.17.1"
-            // NEWTUBE-AUTO: -PautoBuild makes the Android Auto fork, installable next to NewTube.
-            if (project.hasProperty('autoBuild')) {
-                applicationIdSuffix ".auto"
-                versionNameSuffix "-auto"
-            }
         }
     }
 }
@@ -417,8 +410,8 @@ dependencies {
     stmobileImplementation 'androidx.media3:media3-exoplayer-hls:' + media3Version
     stmobileImplementation 'androidx.media3:media3-datasource-okhttp:' + media3Version
     stmobileImplementation 'androidx.media3:media3-ui:' + media3Version
-    // NEWTUBE-AUTO: Android Auto (Car App Library). app-projected brings the car hardware
-    // manager (speed) on a phone projecting to the car.
+    // Android Auto (Car App Library). app-projected brings the car hardware manager (speed) on a
+    // phone projecting to the car.
     stmobileImplementation 'androidx.car.app:app:1.7.0'
     stmobileImplementation 'androidx.car.app:app-projected:1.7.0'
     // Cronet leaf transport for the media path (H2/QUIC, like the legacy engine had): our copy of

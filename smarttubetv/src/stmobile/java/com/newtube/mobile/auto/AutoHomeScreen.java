@@ -17,7 +17,7 @@ import androidx.lifecycle.LifecycleOwner;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.tv.R;
 
-/** NEWTUBE-AUTO: first screen - the feeds, search and what is playing. */
+/** NEWTUBE(android-auto): first screen - the feeds, search and what is playing. */
 public class AutoHomeScreen extends Screen implements AutoPlayer.Listener {
     private final AutoSession mSession;
 

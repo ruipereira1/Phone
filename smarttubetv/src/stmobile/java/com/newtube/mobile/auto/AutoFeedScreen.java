@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/** NEWTUBE-AUTO: a list of videos (a feed or search results). A tap plays from there on. */
+/** NEWTUBE(android-auto): a list of videos (a feed or search results). A tap plays from there on. */
 public class AutoFeedScreen extends Screen {
     public enum Kind { SUBSCRIPTIONS, HOME, HISTORY, CONTINUE, PLAYLISTS, PLAYLIST, SEARCH }
 

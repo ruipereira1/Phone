@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/** NEWTUBE-AUTO: blocking feed loads for the car's music screen and voice search. */
+/** NEWTUBE(android-auto): blocking feed loads for the car's music screen and voice search. */
 final class AutoFeeds {
     static final String SUBSCRIPTIONS = "subs";
     static final String HOME = "home";

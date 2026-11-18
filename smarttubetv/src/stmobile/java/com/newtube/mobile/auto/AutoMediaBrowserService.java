@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * NEWTUBE-AUTO: NewTube in the car's music screen. Same feeds as the car screens, sound only,
+ * NEWTUBE(android-auto): NewTube in the car's music screen. Same feeds as the car screens, sound only,
  * through the same {@link AutoPlayer} and media session. Unlike the navigation-category car app,
  * a media app needs only Android Auto's "Unknown sources", so NewTube stays reachable in the car
  * even if Android Auto ever hides the video screen. Also answers "play X on NewTube Auto".
