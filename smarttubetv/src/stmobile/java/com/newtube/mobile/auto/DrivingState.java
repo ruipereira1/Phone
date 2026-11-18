@@ -115,10 +115,16 @@ public final class DrivingState {
             }
             mSpeedListener = null;
         }
+        stopGps();
+    }
+
+    private void stopGps() {
         if (mLocationListener != null) {
             LocationManager lm = (LocationManager) mCarContext.getSystemService(Context.LOCATION_SERVICE);
             if (lm != null) lm.removeUpdates(mLocationListener);
             mLocationListener = null;
+            mGpsSpeed = -1;
+            android.util.Log.i("NewTubeAuto", "gps off: the car reports its speed");
         }
     }
 
@@ -135,6 +141,9 @@ public final class DrivingState {
                 if (value >= 0) {
                     mCarSpeed = Math.abs(value);
                     mCarSpeedAt = SystemClock.elapsedRealtime();
+                    // The car's own speed is the truth; the phone's GPS jitters (2-3 m/s seen
+                    // standing still) and costs battery, so it stops once the car reports.
+                    stopGps();
                     evaluate();
                 }
             };
@@ -191,7 +200,8 @@ public final class DrivingState {
     private void evaluate() {
         long now = SystemClock.elapsedRealtime();
         boolean carLive = mCarSpeed >= 0 && mSpeedListener != null;
-        boolean gpsLive = mGpsSpeed >= 0 && now - mGpsSpeedAt < GPS_STALE_MS;
+        // GPS only counts when the car does not report its own speed.
+        boolean gpsLive = !carLive && mGpsSpeed >= 0 && now - mGpsSpeedAt < GPS_STALE_MS;
 
         State next;
         if (!carLive && !gpsLive) {
