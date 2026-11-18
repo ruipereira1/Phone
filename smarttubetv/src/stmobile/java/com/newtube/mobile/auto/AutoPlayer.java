@@ -65,7 +65,7 @@ public final class AutoPlayer {
     private boolean mVideoReopened;
     /** Position to seek to once the current open is ready (a reopen to bring the picture back). */
     private long mResumeAtMs = -1;
-    private static final long VIDEO_BACK_CHECK_MS = 4_000;
+    private static final long VIDEO_BACK_CHECK_MS = 2_500;
     private String mStatus = "";
 
     private AutoPlayer(Context context) {
